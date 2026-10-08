@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>عماد فريج · أدوات الذكاء الاصطناعي للتعليم</title>
+<meta name="description" content="دليل منتقى لأدوات الذكاء الاصطناعي للمعلمين والباحثين وواضعي الاختبارات — عماد فريج">
+<meta property="og:title" content="عماد فريج · أدوات الذكاء الاصطناعي للتعليم">
+<meta property="og:description" content="دليل منتقى لأدوات الذكاء الاصطناعي للمعلمين والباحثين وواضعي الاختبارات">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#04050d; --bg2:#0a0c1c; --text:#e8ecff; --muted:#8a93b8;
+  --cyan:#00f0ff; --pink:#ff2bd6; --lime:#b6ff3b; --violet:#8b5cf6;
+  --glass:rgba(255,255,255,.04); --line:rgba(255,255,255,.09);
+  --radius:18px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:"IBM Plex Sans Arabic",system-ui,sans-serif;
+  background:var(--bg); color:var(--text); line-height:1.7;
+  overflow-x:hidden; min-height:100vh;
+}
+a{color:inherit;text-decoration:none}
+
+/* ===== Cinematic intro: letterbox bars ===== */
+.bars{position:fixed;inset:0;z-index:100;pointer-events:none}
+.bars::before,.bars::after{content:"";position:absolute;left:0;right:0;height:50%;background:#000;
+  transition:transform 1.4s cubic-bezier(.77,0,.18,1) .3s}
+.bars::before{top:0}.bars::after{bottom:0}
+body.ready .bars::before{transform:translateY(-100%)}
+body.ready .bars::after{transform:translateY(100%)}
+
+/* ===== Background layers ===== */
+#net{position:fixed;inset:0;width:100%;height:100%;z-index:0}
+.aurora{position:fixed;inset:-20%;z-index:0;pointer-events:none;filter:blur(90px);opacity:.55}
+.aurora span{position:absolute;border-radius:50%;mix-blend-mode:screen;animation:drift 22s ease-in-out infinite alternate}
+.aurora span:nth-child(1){width:45vw;height:45vw;background:var(--cyan);top:5%;right:10%;opacity:.25}
+.aurora span:nth-child(2){width:40vw;height:40vw;background:var(--pink);top:40%;left:0;opacity:.22;animation-duration:28s}
+.aurora span:nth-child(3){width:35vw;height:35vw;background:var(--violet);bottom:0;right:35%;opacity:.25;animation-duration:34s}
+@keyframes drift{to{transform:translate(8vw,-6vh) scale(1.15)}}
+.grain{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.07;
+  background-image:repeating-linear-gradient(0deg,rgba(255,255,255,.5) 0 1px,transparent 1px 3px)}
+.vignette{position:fixed;inset:0;z-index:1;pointer-events:none;
+  background:radial-gradient(ellipse at center,transparent 45%,rgba(0,0,0,.75) 100%)}
+
+main,header,footer{position:relative;z-index:2}
+.wrap{max-width:1200px;margin:0 auto;padding:0 20px}
+
+/* ===== Hero ===== */
+.hero{min-height:92vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:90px 20px 60px}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border:1px solid rgba(0,240,255,.35);
+  border-radius:99px;font-size:.85rem;color:var(--cyan);background:rgba(0,240,255,.06);backdrop-filter:blur(8px)}
+.chip i{width:8px;height:8px;border-radius:50%;background:var(--lime);box-shadow:0 0 12px var(--lime);animation:pulse 1.6s infinite}
+@keyframes pulse{50%{opacity:.3}}
+.hero h1{font-size:clamp(2.6rem,8vw,6rem);font-weight:700;line-height:1.15;margin:26px 0 10px;padding:0 .1em .18em;letter-spacing:-.5px;
+  background:linear-gradient(100deg,var(--cyan),var(--violet) 35%,var(--pink) 65%,var(--lime));
+  background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;
+  animation:flow 9s linear infinite;filter:drop-shadow(0 0 28px rgba(0,240,255,.35))}
+@keyframes flow{to{background-position:300% 0}}
+.hero h1 .glitch{position:relative;display:inline-block}
+.role{font-size:clamp(1rem,2.2vw,1.25rem);color:var(--muted);min-height:2em}
+.role .cursor{display:inline-block;width:2px;height:1.1em;background:var(--cyan);vertical-align:middle;margin-inline-start:3px;
+  box-shadow:0 0 10px var(--cyan);animation:blink .9s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.intro{max-width:640px;margin:18px auto 0;color:#b9c1e6;font-size:1.05rem}
+.stats{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-top:38px}
+.stat{min-width:140px;padding:16px 22px;border-radius:var(--radius);background:var(--glass);border:1px solid var(--line);backdrop-filter:blur(10px)}
+.stat b{display:block;font-size:2rem;font-weight:700;color:var(--cyan);text-shadow:0 0 18px rgba(0,240,255,.6)}
+.stat:nth-child(2) b{color:var(--pink);text-shadow:0 0 18px rgba(255,43,214,.6)}
+.stat:nth-child(3) b{color:var(--lime);text-shadow:0 0 18px rgba(182,255,59,.6)}
+.stat span{font-size:.85rem;color:var(--muted)}
+.social{display:flex;gap:12px;justify-content:center;margin-top:30px}
+.social a{width:46px;height:46px;display:grid;place-items:center;border-radius:14px;border:1px solid var(--line);
+  background:var(--glass);transition:.3s}
+.social a svg{width:20px;height:20px;fill:currentColor}
+.social a:hover{color:var(--cyan);border-color:var(--cyan);box-shadow:0 0 22px rgba(0,240,255,.5);transform:translateY(-3px)}
+.scroll-hint{margin-top:46px;width:26px;height:42px;border:2px solid var(--muted);border-radius:14px;position:relative;opacity:.7}
+.scroll-hint::after{content:"";position:absolute;top:8px;left:50%;width:4px;height:8px;margin-left:-2px;border-radius:2px;
+  background:var(--cyan);animation:wheel 1.8s infinite}
+@keyframes wheel{to{transform:translateY(14px);opacity:0}}
+
+/* ===== Toolbar ===== */
+.toolbar{position:sticky;top:0;z-index:20;padding:14px 0;background:rgba(4,5,13,.72);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--line)}
+.search{position:relative}
+.search input{width:100%;padding:14px 48px 14px 18px;font:inherit;font-size:1rem;color:var(--text);
+  background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:14px;outline:none;transition:.3s}
+.search input:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(0,240,255,.15),0 0 30px rgba(0,240,255,.2)}
+.search svg{position:absolute;right:16px;top:50%;transform:translateY(-50%);width:20px;height:20px;stroke:var(--muted)}
+.filters{display:flex;gap:8px;margin-top:12px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.filters::-webkit-scrollbar{display:none}
+.f{flex:none;padding:7px 14px;border-radius:99px;font:inherit;font-size:.88rem;cursor:pointer;color:var(--muted);
+  background:transparent;border:1px solid var(--line);transition:.25s;white-space:nowrap}
+.f:hover{color:var(--text);border-color:rgba(255,255,255,.25)}
+.f.on{color:#04050d;background:var(--cyan);border-color:var(--cyan);box-shadow:0 0 18px rgba(0,240,255,.55);font-weight:600}
+.f.price.on{background:var(--lime);border-color:var(--lime);box-shadow:0 0 18px rgba(182,255,59,.55)}
+.sep{flex:none;width:1px;background:var(--line);margin:4px 4px}
+
+/* ===== Sections & cards ===== */
+section.cat{padding:46px 0 10px}
+.cat h2{font-size:1.45rem;font-weight:600;display:flex;align-items:center;gap:14px;margin-bottom:20px}
+.cat h2::before{content:"";width:6px;height:26px;border-radius:3px;background:linear-gradient(var(--cyan),var(--pink));
+  box-shadow:0 0 14px var(--cyan)}
+.cat h2 small{font-size:.8rem;color:var(--muted);font-weight:400}
+.cat h2::after{content:"";flex:1;height:1px;background:linear-gradient(to left,var(--line),transparent)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+
+.card{--mx:50%;--my:50%;position:relative;display:flex;flex-direction:column;gap:10px;padding:20px;border-radius:var(--radius);
+  background:linear-gradient(160deg,rgba(255,255,255,.055),rgba(255,255,255,.015));border:1px solid var(--line);
+  overflow:hidden;transition:transform .25s ease,border-color .3s,box-shadow .3s;transform-style:preserve-3d;
+  opacity:0;translate:0 26px}
+.card.in{opacity:1;translate:0 0;transition:opacity .7s ease,translate .7s cubic-bezier(.2,.8,.2,1),transform .25s,border-color .3s,box-shadow .3s}
+.card::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .3s;
+  background:radial-gradient(320px circle at var(--mx) var(--my),rgba(0,240,255,.16),transparent 45%)}
+.card:hover{border-color:rgba(0,240,255,.45);box-shadow:0 18px 50px -20px rgba(0,240,255,.45),0 0 0 1px rgba(255,43,214,.15) inset}
+.card:hover::before{opacity:1}
+.card.pick{border-color:rgba(255,43,214,.35);background:linear-gradient(160deg,rgba(255,43,214,.09),rgba(0,240,255,.03))}
+.card.pick::after{content:"";position:absolute;inset:-1px;border-radius:inherit;padding:1px;pointer-events:none;
+  background:conic-gradient(from var(--a,0deg),var(--cyan),var(--pink),var(--lime),var(--cyan));
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;
+  animation:spin 6s linear infinite;opacity:.8}
+@property --a{syntax:"<angle>";inherits:false;initial-value:0deg}
+@keyframes spin{to{--a:360deg}}
+.top{display:flex;align-items:center;gap:12px}
+.ico{width:42px;height:42px;flex:none;border-radius:12px;display:grid;place-items:center;font-weight:700;color:var(--cyan);
+  background:rgba(255,255,255,.06);border:1px solid var(--line);overflow:hidden}
+.ico img{width:24px;height:24px}
+.name{font-weight:600;font-size:1.05rem;direction:ltr;text-align:right}
+.host{font-size:.75rem;color:var(--muted);direction:ltr;text-align:right}
+.note{font-size:.9rem;color:#b9c1e6;flex:1}
+.bottom{display:flex;justify-content:space-between;align-items:center;margin-top:4px}
+.tag{font-size:.75rem;padding:3px 10px;border-radius:99px;border:1px solid}
+.tag.free{color:var(--lime);border-color:rgba(182,255,59,.4);background:rgba(182,255,59,.08)}
+.tag.freemium{color:var(--cyan);border-color:rgba(0,240,255,.4);background:rgba(0,240,255,.08)}
+.tag.paid{color:var(--pink);border-color:rgba(255,43,214,.4);background:rgba(255,43,214,.08)}
+.go{font-size:.85rem;color:var(--muted);display:flex;align-items:center;gap:4px;transition:.25s}
+.card:hover .go{color:var(--cyan);gap:8px}
+.empty{text-align:center;color:var(--muted);padding:80px 0;display:none}
+
+footer{margin-top:70px;padding:40px 0;border-top:1px solid var(--line);text-align:center;color:var(--muted);font-size:.9rem}
+footer .social{margin:0 0 14px}
+
+@media (max-width:600px){
+  .hero{min-height:86vh}.stat{min-width:100px;padding:12px 16px}.stat b{font-size:1.6rem}
+  .grid{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .card{opacity:1;translate:0 0}
+  #net{display:none}
+}
+</style>
+</head>
+<body>
+<div class="bars"></div>
+<canvas id="net"></canvas>
+<div class="aurora"><span></span><span></span><span></span></div>
+<div class="grain"></div>
+<div class="vignette"></div>
+
+<header class="wrap hero">
+  <span class="chip"><i></i>دليل حيّ يُحدَّث باستمرار</span>
+  <h1 id="name"></h1>
+  <p class="role"><span id="typed"></span><span class="cursor"></span></p>
+  <p class="intro" id="intro"></p>
+  <div class="stats">
+    <div class="stat"><b data-count="tools">0</b><span>أداة منتقاة</span></div>
+    <div class="stat"><b data-count="cats">0</b><span>قسماً</span></div>
+    <div class="stat"><b data-count="free">0</b><span>مجانية بالكامل</span></div>
+  </div>
+  <div class="social" id="social"></div>
+  <a href="#tools" class="scroll-hint" aria-label="انتقل إلى الأدوات"></a>
+</header>
+
+<div class="toolbar" id="tools">
+  <div class="wrap">
+    <div class="search">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+      <input id="q" type="search" placeholder="ابحث عن أداة أو استخدام…" autocomplete="off">
+    </div>
+    <div class="filters" id="filters"></div>
+  </div>
+</div>
+
+<main class="wrap" id="list"></main>
+<p class="empty" id="empty">لا توجد نتائج مطابقة.</p>
+
+<footer class="wrap">
+  <div class="social" id="social2"></div>
+  <p id="foot"></p>
+</footer>
+
+<script src="data.js"></script>
+<script>
+(function(){
+  var S = window.SITE, C = window.CATEGORIES, T = window.TOOLS;
+  var PRICE = {free:"مجاني", freemium:"مجاني جزئياً", paid:"مدفوع"};
+  var ICONS = {
+    linkedin:'<path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/>',
+    youtube:'<path d="M23.5 6.19a3.02 3.02 0 0 0-2.12-2.14C19.5 3.55 12 3.55 12 3.55s-7.5 0-9.38.5A3.02 3.02 0 0 0 .5 6.19C0 8.07 0 12 0 12s0 3.93.5 5.81a3.02 3.02 0 0 0 2.12 2.14c1.87.5 9.38.5 9.38.5s7.5 0 9.38-.5a3.02 3.02 0 0 0 2.12-2.14C24 15.93 24 12 24 12s0-3.93-.5-5.81zM9.55 15.57V8.43L15.82 12l-6.27 3.57z"/>',
+    tiktok:'<path d="M12.53.02C13.84 0 15.14.01 16.44 0c.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03a10.4 10.4 0 0 1-5.82-1.9c-.01 2.92.01 5.84-.02 8.75a7.6 7.6 0 0 1-1.35 3.94 7.45 7.45 0 0 1-5.91 3.21 7.3 7.3 0 0 1-4.08-1.03 7.55 7.55 0 0 1-3.66-7.2 7.6 7.6 0 0 1 2.59-4.96 7.48 7.48 0 0 1 6.15-1.72c.02 1.48-.04 2.96-.04 4.44a3.4 3.4 0 0 0-4.38 2.12c-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87a3.3 3.3 0 0 0 2.77-1.61c.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/>',
+    instagram:'<path d="M12 2.16c3.2 0 3.58.01 4.85.07 3.25.15 4.77 1.69 4.92 4.92.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.15 3.23-1.66 4.77-4.92 4.92-1.27.06-1.64.07-4.85.07s-3.58-.01-4.85-.07c-3.26-.15-4.77-1.7-4.92-4.92C2.17 15.58 2.16 15.2 2.16 12s.01-3.58.07-4.85C2.38 3.92 3.9 2.38 7.15 2.23 8.42 2.17 8.8 2.16 12 2.16zM12 0C8.74 0 8.33.01 7.05.07 2.7.27.27 2.69.07 7.05.01 8.33 0 8.74 0 12s.01 3.67.07 4.95c.2 4.36 2.62 6.78 6.98 6.98 1.28.06 1.69.07 4.95.07s3.67-.01 4.95-.07c4.35-.2 6.78-2.62 6.98-6.98.06-1.28.07-1.69.07-4.95s-.01-3.67-.07-4.95C23.73 2.7 21.31.27 16.95.07 15.67.01 15.26 0 12 0zm0 5.84a6.16 6.16 0 1 0 0 12.32 6.16 6.16 0 0 0 0-12.32zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.4-11.85a1.44 1.44 0 1 0 0 2.88 1.44 1.44 0 0 0 0-2.88z"/>'
+  };
+  var LABEL = {linkedin:"LinkedIn", youtube:"YouTube", tiktok:"TikTok", instagram:"Instagram"};
+
+  function esc(s){ return String(s||"").replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];}); }
+  function host(u){ try{ return new URL(u).hostname.replace(/^www\./,""); }catch(e){ return ""; } }
+
+  /* ---- header ---- */
+  document.getElementById("name").textContent = S.name;
+  document.getElementById("intro").textContent = S.intro;
+  document.title = S.name + " · أدوات الذكاء الاصطناعي للتعليم";
+  var soc = Object.keys(ICONS).filter(function(k){ return S.social && S.social[k]; }).map(function(k){
+    return '<a href="'+esc(S.social[k])+'" target="_blank" rel="noopener" aria-label="'+LABEL[k]+'" title="'+LABEL[k]+'"><svg viewBox="0 0 24 24">'+ICONS[k]+'</svg></a>';
+  }).join("");
+  document.getElementById("social").innerHTML = soc;
+  document.getElementById("social2").innerHTML = soc;
+  document.getElementById("foot").textContent = "© " + new Date().getFullYear() + " " + S.name + " · آخر تحديث " + S.updated;
+
+  /* ---- typewriter ---- */
+  var phrases = [S.title, "أدوات منتقاة للمعلم والباحث وواضع الاختبارات", "الذكاء الاصطناعي في خدمة التعليم"];
+  var typed = document.getElementById("typed"), pi = 0, ci = 0, del = false;
+  function type(){
+    var p = phrases[pi];
+    typed.textContent = p.slice(0, ci);
+    if(!del && ci < p.length){ ci++; setTimeout(type, 45); }
+    else if(!del){ del = true; setTimeout(type, 2400); }
+    else if(ci > 0){ ci--; setTimeout(type, 18); }
+    else { del = false; pi = (pi+1) % phrases.length; setTimeout(type, 400); }
+  }
+
+  /* ---- counters ---- */
+  var uniq = {}; T.forEach(function(t){ uniq[t.url] = t; });
+  var u = Object.keys(uniq).map(function(k){ return uniq[k]; });
+  var counts = { tools:u.length, cats:C.length, free:u.filter(function(t){return t.price==="free";}).length };
+  function countUp(){
+    document.querySelectorAll("[data-count]").forEach(function(el){
+      var end = counts[el.dataset.count], t0 = performance.now();
+      (function step(now){
+        var k = Math.min(1,(now-t0)/1600), e = 1-Math.pow(1-k,3);
+        el.textContent = Math.round(end*e);
+        if(k<1) requestAnimationFrame(step);
+      })(t0);
+    });
+  }
+
+  /* ---- filters ---- */
+  var state = {cat:"all", price:"all", q:""};
+  var fh = '<button class="f on" data-cat="all">الكل</button>' +
+    C.map(function(c){ return '<button class="f" data-cat="'+c.id+'">'+esc(c.title)+'</button>'; }).join("") +
+    '<span class="sep"></span>' +
+    Object.keys(PRICE).map(function(p){ return '<button class="f price" data-price="'+p+'">'+PRICE[p]+'</button>'; }).join("");
+  var F = document.getElementById("filters"); F.innerHTML = fh;
+  F.addEventListener("click", function(e){
+    var b = e.target.closest(".f"); if(!b) return;
+    if(b.dataset.cat){ state.cat = b.dataset.cat; F.querySelectorAll("[data-cat]").forEach(function(x){x.classList.toggle("on", x===b);}); }
+    if(b.dataset.price){ state.price = state.price===b.dataset.price ? "all" : b.dataset.price;
+      F.querySelectorAll("[data-price]").forEach(function(x){x.classList.toggle("on", x.dataset.price===state.price);}); }
+    render();
+  });
+  document.getElementById("q").addEventListener("input", function(e){ state.q = e.target.value.trim().toLowerCase(); render(); });
+
+  /* ---- render ---- */
+  var io = "IntersectionObserver" in window ? new IntersectionObserver(function(es){
+    es.forEach(function(en){ if(en.isIntersecting){ en.target.classList.add("in"); io.unobserve(en.target); } });
+  },{threshold:.12}) : null;
+
+  function card(t, i){
+    var h = host(t.url);
+    var letter = esc((t.name||"?").charAt(0));
+    return '<a class="card'+(t.cat==="picks"?" pick":"")+'" href="'+esc(t.url)+'" target="_blank" rel="noopener" style="transition-delay:'+(i%8)*60+'ms">' +
+      '<div class="top"><div class="ico"><img loading="lazy" alt="" src="https://www.google.com/s2/favicons?domain='+encodeURIComponent(h)+'&sz=64" onerror="this.replaceWith(document.createTextNode(\''+letter+'\'))"></div>' +
+      '<div><div class="name">'+esc(t.name)+'</div><div class="host">'+esc(h)+'</div></div></div>' +
+      (t.note ? '<p class="note">'+esc(t.note)+'</p>' : '<p class="note"></p>') +
+      '<div class="bottom"><span class="tag '+t.price+'">'+(PRICE[t.price]||"")+'</span><span class="go">زيارة <span>&larr;</span></span></div></a>';
+  }
+
+  function render(){
+    var html = "", total = 0;
+    C.forEach(function(c){
+      if(state.cat!=="all" && state.cat!==c.id) return;
+      var items = T.filter(function(t){
+        if(t.cat!==c.id) return false;
+        if(state.price!=="all" && t.price!==state.price) return false;
+        if(state.q){ var hay=(t.name+" "+(t.note||"")+" "+c.title+" "+t.url).toLowerCase(); if(hay.indexOf(state.q)<0) return false; }
+        return true;
+      });
+      if(!items.length) return;
+      total += items.length;
+      html += '<section class="cat" id="c-'+c.id+'"><h2>'+esc(c.title)+' <small>'+items.length+'</small></h2><div class="grid">'+
+        items.map(card).join("")+'</div></section>';
+    });
+    var L = document.getElementById("list"); L.innerHTML = html;
+    document.getElementById("empty").style.display = total ? "none" : "block";
+    L.querySelectorAll(".card").forEach(function(el){ io ? io.observe(el) : el.classList.add("in"); });
+  }
+  render();
+
+  /* ---- card spotlight + tilt ---- */
+  var fine = window.matchMedia("(hover:hover)").matches;
+  document.addEventListener("mousemove", function(e){
+    var c = e.target.closest && e.target.closest(".card"); if(!c || !fine) return;
+    var r = c.getBoundingClientRect(), x = e.clientX-r.left, y = e.clientY-r.top;
+    c.style.setProperty("--mx", x+"px"); c.style.setProperty("--my", y+"px");
+    c.style.transform = "perspective(800px) rotateX("+((y/r.height-.5)*-7)+"deg) rotateY("+((x/r.width-.5)*7)+"deg) translateY(-4px)";
+  });
+  document.addEventListener("mouseout", function(e){
+    var c = e.target.closest && e.target.closest(".card");
+    if(c && !c.contains(e.relatedTarget)) c.style.transform = "";
+  });
+
+  /* ---- neural network canvas ---- */
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var cv = document.getElementById("net"), ctx = cv.getContext("2d"), W, H, pts = [], mouse = {x:-999,y:-999};
+  var COLORS = ["0,240,255","255,43,214","182,255,59","139,92,246"];
+  function size(){
+    var d = Math.min(window.devicePixelRatio||1, 2);
+    W = innerWidth; H = innerHeight; cv.width = W*d; cv.height = H*d; ctx.setTransform(d,0,0,d,0,0);
+    var n = Math.round(Math.min(110, W*H/14000));
+    pts = []; for(var i=0;i<n;i++) pts.push({x:Math.random()*W, y:Math.random()*H, vx:(Math.random()-.5)*.35, vy:(Math.random()-.5)*.35,
+      r:Math.random()*1.8+.6, c:COLORS[i%4], p:Math.random()*6.28});
+  }
+  addEventListener("resize", size);
+  addEventListener("mousemove", function(e){ mouse.x=e.clientX; mouse.y=e.clientY; });
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    for(var i=0;i<pts.length;i++){
+      var a = pts[i];
+      a.x+=a.vx; a.y+=a.vy; a.p+=.03;
+      if(a.x<0||a.x>W) a.vx*=-1; if(a.y<0||a.y>H) a.vy*=-1;
+      var dx=mouse.x-a.x, dy=mouse.y-a.y, dm=Math.sqrt(dx*dx+dy*dy);
+      if(dm<180){ a.x+=dx*.006; a.y+=dy*.006; }
+      for(var j=i+1;j<pts.length;j++){
+        var b=pts[j], ex=a.x-b.x, ey=a.y-b.y, d=ex*ex+ey*ey;
+        if(d<15000){ ctx.strokeStyle="rgba("+a.c+","+(.22*(1-d/15000))+")"; ctx.lineWidth=.7;
+          ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke(); }
+      }
+      if(dm<180){ ctx.strokeStyle="rgba("+a.c+","+(.5*(1-dm/180))+")"; ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(mouse.x,mouse.y); ctx.stroke(); }
+      var g = .6+.4*Math.sin(a.p);
+      ctx.fillStyle="rgba("+a.c+","+g+")"; ctx.shadowBlur=12; ctx.shadowColor="rgba("+a.c+",1)";
+      ctx.beginPath(); ctx.arc(a.x,a.y,a.r,0,6.28); ctx.fill(); ctx.shadowBlur=0;
+    }
+    requestAnimationFrame(draw);
+  }
+
+  /* ---- start ---- */
+  function start(){
+    document.body.classList.add("ready");
+    setTimeout(type, 900); setTimeout(countUp, 1100);
+    if(!reduce){ size(); draw(); }
+  }
+  setTimeout(start, 150);
+})();
+</script>
+</body>
+</html>
