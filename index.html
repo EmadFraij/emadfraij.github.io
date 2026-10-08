@@ -87,10 +87,10 @@ main,header,footer{position:relative;z-index:2}
 .toolbar{position:sticky;top:0;z-index:20;padding:14px 0;background:rgba(4,5,13,.72);backdrop-filter:blur(16px);
   border-bottom:1px solid var(--line)}
 .search{position:relative}
-.search input{width:100%;padding:14px 48px 14px 18px;font:inherit;font-size:1rem;color:var(--text);
+.search input{width:100%;padding-block:14px;padding-inline:48px 18px;font:inherit;font-size:1rem;color:var(--text);
   background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:14px;outline:none;transition:.3s}
 .search input:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(0,240,255,.15),0 0 30px rgba(0,240,255,.2)}
-.search svg{position:absolute;right:16px;top:50%;transform:translateY(-50%);width:20px;height:20px;stroke:var(--muted)}
+.search svg{position:absolute;inset-inline-start:16px;top:50%;transform:translateY(-50%);width:20px;height:20px;stroke:var(--muted)}
 .filters{display:flex;gap:8px;margin-top:12px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
 .filters::-webkit-scrollbar{display:none}
 .f{flex:none;padding:7px 14px;border-radius:99px;font:inherit;font-size:.88rem;cursor:pointer;color:var(--muted);
@@ -107,6 +107,14 @@ section.cat{padding:46px 0 10px}
   box-shadow:0 0 14px var(--cyan)}
 .cat h2 small{font-size:.8rem;color:var(--muted);font-weight:400}
 .cat h2::after{content:"";flex:1;height:1px;background:linear-gradient(to left,var(--line),transparent)}
+[dir=ltr] .cat h2::after{background:linear-gradient(to right,var(--line),transparent)}
+[dir=ltr] .go .arr{transform:scaleX(-1)}
+.go .arr{display:inline-block}
+.lang{position:fixed;top:16px;inset-inline-end:16px;z-index:30;display:flex;padding:4px;border-radius:99px;
+  background:rgba(10,12,28,.7);border:1px solid var(--line);backdrop-filter:blur(12px)}
+.lang button{font:inherit;font-size:.8rem;font-weight:600;padding:6px 12px;border:0;border-radius:99px;cursor:pointer;color:var(--muted);background:transparent;transition:.25s}
+@media (max-width:1480px){.toolbar .search{margin-inline-end:96px}}
+.lang button.on{color:#04050d;background:var(--cyan);box-shadow:0 0 16px rgba(0,240,255,.6)}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
 
 .card{--mx:50%;--my:50%;position:relative;display:flex;flex-direction:column;gap:10px;padding:20px;border-radius:var(--radius);
@@ -129,8 +137,8 @@ section.cat{padding:46px 0 10px}
 .ico{width:42px;height:42px;flex:none;border-radius:12px;display:grid;place-items:center;font-weight:700;color:var(--cyan);
   background:rgba(255,255,255,.06);border:1px solid var(--line);overflow:hidden}
 .ico img{width:24px;height:24px}
-.name{font-weight:600;font-size:1.05rem;direction:ltr;text-align:right}
-.host{font-size:.75rem;color:var(--muted);direction:ltr;text-align:right}
+.name{font-weight:600;font-size:1.05rem;direction:ltr;text-align:start;unicode-bidi:plaintext}
+.host{font-size:.75rem;color:var(--muted);direction:ltr;text-align:start;unicode-bidi:plaintext}
 .note{font-size:.9rem;color:#b9c1e6;flex:1}
 .bottom{display:flex;justify-content:space-between;align-items:center;margin-top:4px}
 .tag{font-size:.75rem;padding:3px 10px;border-radius:99px;border:1px solid}
@@ -157,20 +165,21 @@ footer .social{margin:0 0 14px}
 </head>
 <body>
 <div class="bars"></div>
+<div class="lang" role="group" aria-label="Language"><button data-lang="ar">ع</button><button data-lang="en">EN</button></div>
 <canvas id="net"></canvas>
 <div class="aurora"><span></span><span></span><span></span></div>
 <div class="grain"></div>
 <div class="vignette"></div>
 
 <header class="wrap hero">
-  <span class="chip"><i></i>دليل حيّ يُحدَّث باستمرار</span>
+  <span class="chip"><i></i><span data-i18n="chip">دليل حيّ يُحدَّث باستمرار</span></span>
   <h1 id="name"></h1>
   <p class="role"><span id="typed"></span><span class="cursor"></span></p>
   <p class="intro" id="intro"></p>
   <div class="stats">
-    <div class="stat"><b data-count="tools">0</b><span>أداة منتقاة</span></div>
-    <div class="stat"><b data-count="cats">0</b><span>قسماً</span></div>
-    <div class="stat"><b data-count="free">0</b><span>مجانية بالكامل</span></div>
+    <div class="stat"><b data-count="tools">0</b><span data-i18n="sTools">أداة منتقاة</span></div>
+    <div class="stat"><b data-count="cats">0</b><span data-i18n="sCats">قسماً</span></div>
+    <div class="stat"><b data-count="free">0</b><span data-i18n="sFree">مجانية بالكامل</span></div>
   </div>
   <div class="social" id="social"></div>
   <a href="#tools" class="scroll-hint" aria-label="انتقل إلى الأدوات"></a>
@@ -187,7 +196,7 @@ footer .social{margin:0 0 14px}
 </div>
 
 <main class="wrap" id="list"></main>
-<p class="empty" id="empty">لا توجد نتائج مطابقة.</p>
+<p class="empty" id="empty" data-i18n="empty">لا توجد نتائج مطابقة.</p>
 
 <footer class="wrap">
   <div class="social" id="social2"></div>
@@ -198,7 +207,6 @@ footer .social{margin:0 0 14px}
 <script>
 (function(){
   var S = window.SITE, C = window.CATEGORIES, T = window.TOOLS;
-  var PRICE = {free:"مجاني", freemium:"مجاني جزئياً", paid:"مدفوع"};
   var ICONS = {
     linkedin:'<path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/>',
     youtube:'<path d="M23.5 6.19a3.02 3.02 0 0 0-2.12-2.14C19.5 3.55 12 3.55 12 3.55s-7.5 0-9.38.5A3.02 3.02 0 0 0 .5 6.19C0 8.07 0 12 0 12s0 3.93.5 5.81a3.02 3.02 0 0 0 2.12 2.14c1.87.5 9.38.5 9.38.5s7.5 0 9.38-.5a3.02 3.02 0 0 0 2.12-2.14C24 15.93 24 12 24 12s0-3.93-.5-5.81zM9.55 15.57V8.43L15.82 12l-6.27 3.57z"/>',
@@ -210,28 +218,63 @@ footer .social{margin:0 0 14px}
   function esc(s){ return String(s||"").replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];}); }
   function host(u){ try{ return new URL(u).hostname.replace(/^www\./,""); }catch(e){ return ""; } }
 
-  /* ---- header ---- */
-  document.getElementById("name").textContent = S.name;
-  document.getElementById("intro").textContent = S.intro;
-  document.title = S.name + " · أدوات الذكاء الاصطناعي للتعليم";
+  /* ---- language ---- */
+  var I18N = {
+    ar: { chip:"دليل حيّ يُحدَّث باستمرار", sTools:"أداة منتقاة", sCats:"قسماً", sFree:"مجانية بالكامل",
+          empty:"لا توجد نتائج مطابقة.", all:"الكل", visit:"زيارة", search:"ابحث عن أداة أو استخدام…",
+          updated:"آخر تحديث", docTitle:"أدوات الذكاء الاصطناعي للتعليم", toTools:"انتقل إلى الأدوات",
+          price:{free:"مجاني", freemium:"مجاني جزئياً", paid:"مدفوع"},
+          phrases:["أدوات منتقاة للمعلم والباحث وواضع الاختبارات", "الذكاء الاصطناعي في خدمة التعليم"] },
+    en: { chip:"A living directory, updated regularly", sTools:"curated tools", sCats:"categories", sFree:"completely free",
+          empty:"No matching results.", all:"All", visit:"Visit", search:"Search for a tool or use…",
+          updated:"Last updated", docTitle:"AI Tools for Education", toTools:"Jump to tools",
+          price:{free:"Free", freemium:"Freemium", paid:"Paid"},
+          phrases:["Hand-picked tools for teachers, researchers and test developers", "AI in the service of education"] }
+  };
+  var lang = "ar";
+  try{
+    var qp = new URLSearchParams(location.search).get("lang");
+    lang = (qp==="en"||qp==="ar") ? qp : (localStorage.getItem("lang") || "ar");
+  }catch(e){}
+  if(lang!=="en") lang = "ar";
+  function L(k){ return I18N[lang][k]; }
+  function pick(o, k){ return lang==="en" ? (o[k+"_en"] || o[k] || "") : (o[k] || ""); }
+  function catTitle(c){ return lang==="en" ? (c.en || c.title) : c.title; }
+  function priceLabel(p){ return I18N[lang].price[p] || ""; }
+
+  /* ---- static texts ---- */
   var soc = Object.keys(ICONS).filter(function(k){ return S.social && S.social[k]; }).map(function(k){
     return '<a href="'+esc(S.social[k])+'" target="_blank" rel="noopener" aria-label="'+LABEL[k]+'" title="'+LABEL[k]+'"><svg viewBox="0 0 24 24">'+ICONS[k]+'</svg></a>';
   }).join("");
   document.getElementById("social").innerHTML = soc;
   document.getElementById("social2").innerHTML = soc;
-  document.getElementById("foot").textContent = "© " + new Date().getFullYear() + " " + S.name + " · آخر تحديث " + S.updated;
+
+  var phrases = [];
+  function applyStatic(){
+    var html = document.documentElement;
+    html.lang = lang; html.dir = lang==="en" ? "ltr" : "rtl";
+    document.getElementById("name").textContent = pick(S,"name");
+    document.getElementById("intro").textContent = pick(S,"intro");
+    document.title = pick(S,"name") + " · " + L("docTitle");
+    document.querySelectorAll("[data-i18n]").forEach(function(el){ el.textContent = L(el.dataset.i18n); });
+    document.getElementById("q").placeholder = L("search");
+    document.querySelector(".scroll-hint").setAttribute("aria-label", L("toTools"));
+    document.getElementById("foot").textContent = "© " + new Date().getFullYear() + " " + pick(S,"name") + " · " + L("updated") + " " + S.updated;
+    document.querySelectorAll(".lang button").forEach(function(b){ b.classList.toggle("on", b.dataset.lang===lang); });
+    phrases = [pick(S,"title")].concat(L("phrases"));
+  }
 
   /* ---- typewriter ---- */
-  var phrases = [S.title, "أدوات منتقاة للمعلم والباحث وواضع الاختبارات", "الذكاء الاصطناعي في خدمة التعليم"];
-  var typed = document.getElementById("typed"), pi = 0, ci = 0, del = false;
+  var typed = document.getElementById("typed"), pi = 0, ci = 0, del = false, tmr = null;
   function type(){
-    var p = phrases[pi];
+    var p = phrases[pi] || "";
     typed.textContent = p.slice(0, ci);
-    if(!del && ci < p.length){ ci++; setTimeout(type, 45); }
-    else if(!del){ del = true; setTimeout(type, 2400); }
-    else if(ci > 0){ ci--; setTimeout(type, 18); }
-    else { del = false; pi = (pi+1) % phrases.length; setTimeout(type, 400); }
+    if(!del && ci < p.length){ ci++; tmr = setTimeout(type, 45); }
+    else if(!del){ del = true; tmr = setTimeout(type, 2400); }
+    else if(ci > 0){ ci--; tmr = setTimeout(type, 18); }
+    else { del = false; pi = (pi+1) % phrases.length; tmr = setTimeout(type, 400); }
   }
+  function restartType(){ clearTimeout(tmr); pi = 0; ci = 0; del = false; type(); }
 
   /* ---- counters ---- */
   var uniq = {}; T.forEach(function(t){ uniq[t.url] = t; });
@@ -250,11 +293,13 @@ footer .social{margin:0 0 14px}
 
   /* ---- filters ---- */
   var state = {cat:"all", price:"all", q:""};
-  var fh = '<button class="f on" data-cat="all">الكل</button>' +
-    C.map(function(c){ return '<button class="f" data-cat="'+c.id+'">'+esc(c.title)+'</button>'; }).join("") +
-    '<span class="sep"></span>' +
-    Object.keys(PRICE).map(function(p){ return '<button class="f price" data-price="'+p+'">'+PRICE[p]+'</button>'; }).join("");
-  var F = document.getElementById("filters"); F.innerHTML = fh;
+  var F = document.getElementById("filters");
+  function buildFilters(){
+    F.innerHTML = '<button class="f'+(state.cat==="all"?" on":"")+'" data-cat="all">'+L("all")+'</button>' +
+      C.map(function(c){ return '<button class="f'+(state.cat===c.id?" on":"")+'" data-cat="'+c.id+'">'+esc(catTitle(c))+'</button>'; }).join("") +
+      '<span class="sep"></span>' +
+      ["free","freemium","paid"].map(function(p){ return '<button class="f price'+(state.price===p?" on":"")+'" data-price="'+p+'">'+priceLabel(p)+'</button>'; }).join("");
+  }
   F.addEventListener("click", function(e){
     var b = e.target.closest(".f"); if(!b) return;
     if(b.dataset.cat){ state.cat = b.dataset.cat; F.querySelectorAll("[data-cat]").forEach(function(x){x.classList.toggle("on", x===b);}); }
@@ -272,11 +317,12 @@ footer .social{margin:0 0 14px}
   function card(t, i){
     var h = host(t.url);
     var letter = esc((t.name||"?").charAt(0));
+    var note = pick(t,"note");
     return '<a class="card'+(t.cat==="picks"?" pick":"")+'" href="'+esc(t.url)+'" target="_blank" rel="noopener" style="transition-delay:'+(i%8)*60+'ms">' +
       '<div class="top"><div class="ico"><img loading="lazy" alt="" src="https://www.google.com/s2/favicons?domain='+encodeURIComponent(h)+'&sz=64" onerror="this.replaceWith(document.createTextNode(\''+letter+'\'))"></div>' +
       '<div><div class="name">'+esc(t.name)+'</div><div class="host">'+esc(h)+'</div></div></div>' +
-      (t.note ? '<p class="note">'+esc(t.note)+'</p>' : '<p class="note"></p>') +
-      '<div class="bottom"><span class="tag '+t.price+'">'+(PRICE[t.price]||"")+'</span><span class="go">زيارة <span>&larr;</span></span></div></a>';
+      '<p class="note">'+esc(note)+'</p>' +
+      '<div class="bottom"><span class="tag '+t.price+'">'+priceLabel(t.price)+'</span><span class="go">'+L("visit")+' <span class="arr">&larr;</span></span></div></a>';
   }
 
   function render(){
@@ -286,19 +332,34 @@ footer .social{margin:0 0 14px}
       var items = T.filter(function(t){
         if(t.cat!==c.id) return false;
         if(state.price!=="all" && t.price!==state.price) return false;
-        if(state.q){ var hay=(t.name+" "+(t.note||"")+" "+c.title+" "+t.url).toLowerCase(); if(hay.indexOf(state.q)<0) return false; }
+        if(state.q){ var hay=(t.name+" "+(t.note||"")+" "+(t.note_en||"")+" "+c.title+" "+(c.en||"")+" "+t.url).toLowerCase(); if(hay.indexOf(state.q)<0) return false; }
         return true;
       });
       if(!items.length) return;
       total += items.length;
-      html += '<section class="cat" id="c-'+c.id+'"><h2>'+esc(c.title)+' <small>'+items.length+'</small></h2><div class="grid">'+
+      html += '<section class="cat" id="c-'+c.id+'"><h2>'+esc(catTitle(c))+' <small>'+items.length+'</small></h2><div class="grid">'+
         items.map(card).join("")+'</div></section>';
     });
-    var L = document.getElementById("list"); L.innerHTML = html;
+    var Lst = document.getElementById("list"); Lst.innerHTML = html;
     document.getElementById("empty").style.display = total ? "none" : "block";
-    L.querySelectorAll(".card").forEach(function(el){ io ? io.observe(el) : el.classList.add("in"); });
+    Lst.querySelectorAll(".card").forEach(function(el){ io ? io.observe(el) : el.classList.add("in"); });
   }
-  render();
+
+  function setLang(l, initial){
+    lang = l;
+    try{ localStorage.setItem("lang", l); }catch(e){}
+    try{
+      var url = new URL(location.href);
+      if(l==="en") url.searchParams.set("lang","en"); else url.searchParams.delete("lang");
+      history.replaceState(null, "", url.toString());
+    }catch(e){}
+    applyStatic(); buildFilters(); render();
+    if(!initial) restartType();
+  }
+  document.querySelector(".lang").addEventListener("click", function(e){
+    var b = e.target.closest("button[data-lang]"); if(b && b.dataset.lang!==lang) setLang(b.dataset.lang);
+  });
+  setLang(lang, true);
 
   /* ---- card spotlight + tilt ---- */
   var fine = window.matchMedia("(hover:hover)").matches;
