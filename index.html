@@ -93,6 +93,10 @@ main,header,footer{position:relative;z-index:2}
 .search svg{position:absolute;inset-inline-start:16px;top:50%;transform:translateY(-50%);width:20px;height:20px;stroke:var(--muted)}
 .filters{display:flex;gap:8px;margin-top:12px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
 .filters::-webkit-scrollbar{display:none}
+@media (min-width:760px){.filters{flex-wrap:wrap;overflow:visible}}
+.catsel{display:none;width:100%;margin-top:10px;padding:11px 14px;font:inherit;font-size:.95rem;color:var(--text);background:rgba(255,255,255,.05);border:1px solid var(--cyan);border-radius:12px;outline:none;box-shadow:0 0 14px rgba(0,240,255,.2)}
+.catsel option{background:#0a0c1c;color:var(--text)}
+@media (max-width:759px){.catsel{display:block}.filters .f[data-cat]{display:none}.filters .sep{display:none}}
 .f{flex:none;padding:7px 14px;border-radius:99px;font:inherit;font-size:.88rem;cursor:pointer;color:var(--muted);
   background:transparent;border:1px solid var(--line);transition:.25s;white-space:nowrap}
 .f:hover{color:var(--text);border-color:rgba(255,255,255,.25)}
@@ -191,6 +195,7 @@ footer .social{margin:0 0 14px}
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
       <input id="q" type="search" placeholder="ابحث عن أداة أو استخدام…" autocomplete="off">
     </div>
+    <select class="catsel" id="catsel" aria-label="Category"></select>
     <div class="filters" id="filters"></div>
   </div>
 </div>
@@ -299,10 +304,19 @@ footer .social{margin:0 0 14px}
       C.map(function(c){ return '<button class="f'+(state.cat===c.id?" on":"")+'" data-cat="'+c.id+'">'+esc(catTitle(c))+'</button>'; }).join("") +
       '<span class="sep"></span>' +
       ["free","freemium","paid"].map(function(p){ return '<button class="f price'+(state.price===p?" on":"")+'" data-price="'+p+'">'+priceLabel(p)+'</button>'; }).join("");
+    SEL.innerHTML = '<option value="all">'+L("all")+'</option>' +
+      C.map(function(c){ return '<option value="'+c.id+'"'+(state.cat===c.id?" selected":"")+'>'+esc(catTitle(c))+'</option>'; }).join("");
+    SEL.value = state.cat;
   }
+  var SEL = document.getElementById("catsel");
+  SEL.addEventListener("change", function(){
+    state.cat = SEL.value;
+    F.querySelectorAll("[data-cat]").forEach(function(x){ x.classList.toggle("on", x.dataset.cat===state.cat); });
+    render();
+  });
   F.addEventListener("click", function(e){
     var b = e.target.closest(".f"); if(!b) return;
-    if(b.dataset.cat){ state.cat = b.dataset.cat; F.querySelectorAll("[data-cat]").forEach(function(x){x.classList.toggle("on", x===b);}); }
+    if(b.dataset.cat){ state.cat = b.dataset.cat; SEL.value = state.cat; F.querySelectorAll("[data-cat]").forEach(function(x){x.classList.toggle("on", x===b);}); }
     if(b.dataset.price){ state.price = state.price===b.dataset.price ? "all" : b.dataset.price;
       F.querySelectorAll("[data-price]").forEach(function(x){x.classList.toggle("on", x.dataset.price===state.price);}); }
     render();
