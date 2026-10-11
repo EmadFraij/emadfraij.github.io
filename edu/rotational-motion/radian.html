@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>الراديان وطول القوس</title>
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   محطة من منصّة وصف الحركة الدورانية (معمار المسرح الواحد)
+   أربعة تابات بترتيب ثابت: افهم ← شاهد ← نفّذ ← اختبر
+   كل موضع بين قوسين مزدوجين يُستبدل. كل ما هو معلَّم بـ «مثال» محتوى تجريبي يُستبدل بمحتوى المادة.
+   ═══════════════════════════════════════════════════════════════ */
+:root{
+  --bg:#0d1117; --panel:#151b23; --panel2:#1c2530; --panel3:#222d3a;
+  --line:#2b3644; --txt:#e6edf3; --muted:#96a3b3; --dim:#6b7a8c;
+  --accent:#4dabf7; --accent2:#845ef7;
+  --ok:#37b24d; --okbg:#0f2a17; --warn:#f59f00; --warnbg:#2b1f05;
+  --bad:#f03e3e; --badbg:#2b1113; --gold:#ffd43b;
+  /* ألوان الأدوار — لون لكل دور لا لكل عنصر */
+  --role1:#e64980; --role2:#37b24d; --role3:#f59f00; --prod:#845ef7;
+  --r:14px; --r2:10px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;min-height:0}
+body{background:radial-gradient(1200px 600px at 50% -10%,#1b2735 0%,var(--bg) 60%);
+  color:var(--txt);font-family:"IBM Plex Sans Arabic","Segoe UI",Tahoma,sans-serif;
+  font-size:16px;line-height:1.7;-webkit-text-size-adjust:100%}
+body[dir=ltr]{font-family:"IBM Plex Sans Arabic","Segoe UI",Tahoma,sans-serif}
+.shell{max-width:1180px;margin:0 auto;padding:14px 16px 56px}
+h1,h2,h3,h4{margin:0} p{margin:0 0 10px} button{font-family:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.ltr{direction:ltr;unicode-bidi:isolate;display:inline-block}
+
+header.top{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;
+  background:linear-gradient(135deg,#1b2735,#0f1620);border:1px solid var(--line);
+  border-radius:var(--r);padding:13px 18px;margin-bottom:12px}
+header.top .brand{display:flex;align-items:center;gap:12px;min-width:0}
+.logo{width:42px;height:42px;border-radius:12px;flex:none;background:linear-gradient(135deg,var(--accent),var(--accent2));
+  display:grid;place-items:center;font-weight:800;font-size:.95rem;color:#fff;overflow:hidden}
+header.top h1{font-size:1.08rem;font-weight:700;line-height:1.35}
+header.top .sub{font-size:.76rem;color:var(--muted);margin-top:2px}
+.btn{background:var(--panel2);color:var(--txt);border:1px solid var(--line);border-radius:var(--r2);
+  padding:8px 14px;cursor:pointer;font-size:.88rem;transition:.15s;white-space:nowrap}
+.btn:hover{border-color:var(--accent);background:#22303f}
+.btn.primary{background:linear-gradient(135deg,#1d4ed8,#6d28d9);border-color:transparent;color:#fff;font-weight:600}
+.btn.sm{padding:5px 11px;font-size:.8rem;border-radius:8px}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+
+/* التابات الأربعة */
+nav.stages{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-bottom:14px}
+nav.stages button{background:var(--panel);border:1px solid var(--line);color:var(--muted);border-radius:var(--r);
+  padding:12px 10px;cursor:pointer;transition:.18s;display:flex;flex-direction:column;align-items:center;gap:4px;position:relative}
+nav.stages button .ic{font-size:1.25rem;line-height:1}
+nav.stages button .t{font-size:.93rem;font-weight:700}
+nav.stages button:hover{border-color:var(--accent);color:var(--txt)}
+nav.stages button.active{background:linear-gradient(135deg,#1d4ed822,#845ef722);border-color:var(--accent);color:#fff;
+  box-shadow:0 0 0 1px var(--accent) inset}
+nav.stages button .dot{position:absolute;inset-inline-end:9px;top:8px;width:8px;height:8px;border-radius:50%;background:var(--ok);display:none}
+nav.stages button.done .dot{display:block}
+@media(max-width:640px){nav.stages{grid-template-columns:repeat(2,1fr)}}
+.pane{display:none;animation:fade .22s ease} .pane.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;margin-bottom:12px}
+.card h3{font-size:1.02rem;margin-bottom:8px;display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.tag{font-size:.7rem;font-weight:700;padding:2px 9px;border-radius:999px;background:var(--panel3);color:var(--muted);
+  border:1px solid var(--line);white-space:nowrap}
+.tag.ok{background:var(--okbg);color:#7ee39a;border-color:#1d5c31}
+.tag.lock{background:#2a2118;color:#e0b070;border-color:#5c4423}
+
+/* الفصول (رقائق التنقّل داخل الرحلة الواحدة) */
+.acts{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:11px}
+.act{background:var(--panel);border:1px solid var(--line);color:var(--muted);border-radius:999px;padding:5px 12px;
+  font-size:.79rem;cursor:pointer;transition:.15s;display:flex;align-items:center;gap:6px}
+.act.active{background:linear-gradient(135deg,#1d4ed833,#845ef733);border-color:var(--accent);color:#fff;font-weight:700}
+.act .n{display:grid;place-items:center;width:18px;height:18px;border-radius:6px;background:var(--panel3);font-size:.68rem;font-weight:700}
+.act.active .n{background:var(--accent);color:#06121f}
+.act.past{color:var(--txt);border-color:#33506e}
+
+/* المسرح الواحد */
+.stagebox{background:linear-gradient(180deg,#0f1620,#0c1219);border:1px solid var(--line);border-radius:var(--r);
+  padding:8px;margin-bottom:10px;overflow:hidden;position:relative}
+.stagebox svg{display:block;width:100%;height:auto}
+.locbadge{position:absolute;inset-inline-start:16px;top:16px;background:#0b1420cc;border:1px solid var(--line);
+  border-radius:999px;padding:4px 13px;font-size:.76rem;color:var(--accent)}
+.ctrl{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:10px}
+.ctrl .steplbl{font-size:.8rem;color:var(--muted);min-width:74px}
+.spd{display:flex;align-items:center;gap:6px;font-size:.78rem;color:var(--muted);white-space:nowrap}
+.spd select{background:var(--panel2);color:var(--txt);border:1px solid var(--line);border-radius:8px;padding:5px 9px;
+  font-family:inherit;font-size:.8rem;cursor:pointer;direction:ltr}
+.bar{flex:1 1 160px;height:7px;background:var(--panel2);border:1px solid var(--line);border-radius:99px;overflow:hidden;min-width:110px}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));width:0;transition:width .3s}
+.cap{background:var(--panel2);border:1px solid var(--line);border-inline-start:4px solid var(--accent);border-radius:var(--r2);
+  padding:11px 14px;font-size:.93rem;min-height:64px}
+.cap b{color:#fff}
+
+/* شريط الأدوار الدائم */
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:11px 0 0}
+@media(max-width:700px){.roles{grid-template-columns:1fr}}
+.role{background:var(--panel2);border:1px solid var(--line);border-radius:var(--r2);padding:9px 12px;opacity:.4;transition:.28s;
+  position:relative;overflow:hidden}
+.role::before{content:"";position:absolute;inset-inline-start:0;top:0;bottom:0;width:4px;background:currentColor}
+.role.on{opacity:1;background:var(--panel3);box-shadow:0 0 0 1px currentColor inset}
+.role .hd{display:flex;align-items:center;gap:8px}
+.role .gl{width:26px;height:26px;flex:none;border-radius:7px;background:currentColor}
+.role .nm{font-weight:800;font-size:.92rem;color:currentColor}
+.role .job{font-size:.75rem;color:var(--muted);font-weight:700}
+.role .now{font-size:.79rem;margin-top:6px;color:var(--txt);line-height:1.55;border-top:1px dashed #ffffff1f;padding-top:6px;display:none}
+.role.on .now{display:block}
+.role .idle{font-size:.75rem;color:var(--dim);margin-top:6px}
+
+/* نفّذ — كل المهام مفتوحة، وتنقّل حرّ بينها (قرار عماد 2026-09-29) */
+.tnav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.tchip{background:var(--panel);border:1px solid var(--line);color:var(--muted);border-radius:999px;padding:6px 13px;
+  font-size:.8rem;cursor:pointer;transition:.15s;display:flex;align-items:center;gap:7px;font-family:inherit}
+.tchip:hover{border-color:var(--accent);color:var(--txt)}
+.tchip .n{display:grid;place-items:center;width:20px;height:20px;border-radius:6px;background:var(--panel3);font-size:.7rem;font-weight:800}
+.tchip.done{border-color:#1d5c31;color:var(--txt)}
+.tchip.done .n{background:var(--ok);color:#06121f}
+.tchip.active{background:linear-gradient(135deg,#1d4ed833,#845ef733);border-color:var(--accent);color:#fff;font-weight:700}
+.tchip.active .n{background:var(--accent);color:#06121f}
+.tchip.active.done .n{background:var(--ok)}
+.tfoot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:4px;flex-wrap:wrap}
+.tfoot .cnt{font-size:.82rem;color:var(--muted)}
+.pool{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.piece{background:var(--panel3);border:1px solid var(--line);border-radius:var(--r2);padding:8px 14px;font-size:.86rem;
+  cursor:pointer;transition:.15s;user-select:none}
+.piece:hover{border-color:var(--accent);transform:translateY(-2px)}
+.piece.used{opacity:.28;pointer-events:none}
+.piece.sel{border-color:var(--accent);background:#22303f}
+.fb{border-radius:var(--r2);padding:10px 13px;font-size:.88rem;margin-top:10px;display:none}
+.fb.show{display:block}
+.fb.good{background:var(--okbg);border:1px solid var(--ok)}
+.fb.bad{background:var(--badbg);border:1px solid var(--bad)}
+.fb.hint{background:var(--warnbg);border:1px solid var(--warn)}
+.mini{background:#0c1219;border:1px solid var(--line);border-radius:var(--r2);padding:6px;margin:10px 0}
+.mini svg{display:block;width:100%;height:auto}
+.prog{font-size:.8rem;color:var(--muted);margin-top:4px}
+
+/* افهم */
+.read h4{font-size:.98rem;color:var(--accent);margin:16px 0 7px;padding-bottom:5px;border-bottom:1px solid var(--line)}
+.read p{font-size:.95rem}
+.keybox{background:linear-gradient(135deg,#152034,#101823);border:1px solid #24405e;border-inline-start:4px solid var(--gold);
+  border-radius:var(--r2);padding:12px 15px;margin:12px 0;font-size:.93rem}
+.keybox .lbl{font-size:.72rem;font-weight:700;color:var(--gold);letter-spacing:.5px;margin-bottom:4px}
+table.t{width:100%;border-collapse:collapse;font-size:.88rem;margin:10px 0}
+table.t th,table.t td{border:1px solid var(--line);padding:8px 11px;text-align:start;vertical-align:top}
+table.t th{background:var(--panel3);font-weight:700;font-size:.83rem}
+.tblwrap{overflow-x:auto}
+.gloss{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:9px;margin-top:8px}
+.gitem{background:var(--panel2);border:1px solid var(--line);border-radius:var(--r2);padding:11px 13px}
+.gitem .ar{font-weight:700;font-size:.95rem}
+.gitem .en{font-size:.82rem;color:var(--accent);direction:ltr;unicode-bidi:isolate;margin:2px 0 5px}
+.gitem .d{font-size:.85rem;color:var(--muted);line-height:1.6}
+
+/* اختبر */
+.q{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:15px 17px;margin-bottom:11px}
+.qh{display:flex;gap:11px;align-items:flex-start;margin-bottom:4px}
+.num{flex:none;display:grid;place-items:center;width:27px;height:27px;border-radius:8px;background:var(--panel2);
+  border:1px solid var(--line);font-size:.8rem;font-weight:700;color:var(--muted)}
+.q.right .num{background:var(--okbg);border-color:var(--ok);color:#7ee39a}
+.q.wrong .num{background:var(--badbg);border-color:var(--bad);color:#ff9a9a}
+.stem{font-size:.97rem;flex:1}
+.qmeta{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+ul.opts{list-style:none;margin:11px 0 0;padding:0;display:grid;gap:6px}
+ul.opts li{display:flex;gap:10px;align-items:flex-start;padding:9px 12px;border-radius:9px;background:var(--panel2);
+  border:1px solid transparent;font-size:.91rem;color:var(--muted);cursor:pointer;transition:.15s}
+ul.opts li:hover{border-color:var(--accent);color:var(--txt)}
+ul.opts li .k{flex:none;width:21px;height:21px;border-radius:6px;background:var(--panel3);display:grid;place-items:center;font-size:.75rem;font-weight:700}
+ul.opts li.sel{border-color:var(--accent);color:var(--txt)}
+.q.done ul.opts li,.q.done .tile,.q.done .mitem,.q.done .tfbtn{cursor:default;pointer-events:none}
+.q.done li.correct,.q.done .tile.correct,.q.done .mitem.correct,.q.done .tfbtn.correct{background:var(--okbg);border-color:var(--ok);color:var(--txt);font-weight:600}
+.q.done li.miss,.q.done .tile.miss,.q.done .mitem.miss,.q.done .tfbtn.miss{background:var(--badbg);border-color:var(--bad);color:var(--txt)}
+.q.done li.missed{border:1px dashed var(--ok);color:var(--txt)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:10px}
+.tile{background:var(--panel2);border:1px solid var(--line);border-radius:var(--r2);padding:12px;text-align:center;cursor:pointer;font-size:.9rem}
+.tile:hover{border-color:var(--accent)}
+.tfrow{display:flex;gap:10px;margin-top:10px}
+.tfbtn{flex:1;background:var(--panel2);border:1px solid var(--line);color:var(--txt);border-radius:var(--r2);padding:11px;cursor:pointer;font-size:.92rem}
+.match{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:start;margin-top:10px}
+.mcol{display:grid;gap:7px}
+.mitem{background:var(--panel2);border:1px solid var(--line);border-radius:var(--r2);padding:9px 11px;cursor:pointer;font-size:.88rem;display:flex;gap:8px;align-items:center}
+.mitem.sel{border-color:var(--accent);background:#22303f}
+.mitem.paired{border-style:solid;border-color:#33506e}
+.mitem .n{flex:none;width:20px;height:20px;border-radius:6px;background:var(--panel3);display:grid;place-items:center;font-size:.72rem;font-weight:700}
+.mlink{align-self:center;color:var(--dim)}
+.actions{margin-top:10px}
+.exp{margin-top:10px;border-radius:var(--r2);padding:10px 13px;font-size:.89rem;line-height:1.65}
+.exp.good{background:var(--okbg);border:1px solid #1d5c31}
+.exp.bad{background:var(--badbg);border:1px solid #6b2226}
+.exp .nud{margin-top:7px;padding-top:7px;border-top:1px dashed #ffffff22;color:var(--gold);font-size:.85rem}
+.score{background:linear-gradient(135deg,#152034,#101823);border:1px solid #24405e;border-radius:var(--r);padding:15px 18px;
+  margin-bottom:12px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.score .big{font-size:1.7rem;font-weight:800}
+.score .lbl{font-size:.82rem;color:var(--muted)}
+.skillbars{display:grid;gap:7px;margin-top:10px;flex:1 1 260px}
+.sb{display:flex;align-items:center;gap:9px;font-size:.8rem}
+.sb .nm{flex:1 1 auto;color:var(--muted)}
+.sb .tr{flex:0 0 96px;height:6px;background:var(--panel2);border-radius:99px;overflow:hidden;border:1px solid var(--line)}
+.sb .tr i{display:block;height:100%;background:var(--ok)}
+footer.note{margin-top:20px;font-size:.76rem;color:var(--dim);text-align:center;line-height:1.8}
+</style>
+</head>
+<body>
+<div class="shell wrap">
+
+<header class="top">
+  <div class="brand">
+    <div class="logo">1.1</div>
+    <div><h1 id="hTitle"></h1><div class="sub" id="hSub"></div></div>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center">
+    <button class="btn sm" id="resetBtn"></button>
+    <button class="btn" id="langBtn">English</button>
+  </div>
+</header>
+
+<nav class="stages" id="stageNav"></nav>
+
+<!-- 1 · افهم -->
+<section class="pane" id="pane-read"><div id="readWrap"></div></section>
+
+<!-- 2 · شاهد -->
+<section class="pane" id="pane-watch">
+  <div class="acts" id="actChips"></div>
+  <div class="card" style="padding:14px 16px">
+    <h3 id="sceneTitle"></h3>
+    <div class="stagebox"><div class="locbadge" id="locBadge"></div><div id="sceneSvg"></div></div>
+    <div class="ctrl">
+      <button class="btn sm" id="btnPrev"></button>
+      <button class="btn sm primary" id="btnPlay"></button>
+      <button class="btn sm" id="btnNext"></button>
+      <label class="spd"><span id="spdLbl"></span>
+        <select id="spdSel">
+          <option value="0.5">×0.5</option><option value="0.75">×0.75</option><option value="1" selected>×1</option>
+          <option value="1.5">×1.5</option><option value="2">×2</option><option value="3">×3</option>
+        </select></label>
+      <span class="steplbl" id="stepLbl"></span>
+      <div class="bar"><i id="stepBar"></i></div>
+    </div>
+    <div class="cap" id="sceneCap"></div>
+    <div class="roles" id="roleBar"></div>
+  </div>
+</section>
+
+<!-- 3 · نفّذ -->
+<section class="pane" id="pane-do"><div id="doWrap"></div></section>
+
+<!-- 4 · اختبر -->
+<section class="pane" id="pane-test">
+  <div class="score" id="scoreBox"></div>
+  <div id="quizWrap"></div>
+</section>
+
+<footer class="note" id="foot"></footer>
+</div>
+<script>
+"use strict";
+/* ═══════════════════════════════════════════════════════════════
+   0 · الأساس المشترك — لا يُعدَّل
+   ═══════════════════════════════════════════════════════════════ */
+let LANG = "ar";
+const T  = o => !o ? "" : (typeof o === "string" ? o : (o[LANG] || o.ar || o.en || ""));
+const $  = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const NS = 'xmlns="http://www.w3.org/2000/svg"';
+const SV = (vb, inner) => `<svg viewBox="${vb}" ${NS} font-family="IBM Plex Sans Arabic,Segoe UI,Tahoma,Arial,sans-serif">${inner}</svg>`;
+const ltr = s => `⁦${s}⁩`;                       /* عزل رمز أو تسلسل لاتيني داخل نصّ عربي */
+/* أي خيار أو مسمّى بلا حروف عربية يُلَفّ بـ span.ltr وإلا انقلب في الصفحة العربية */
+const OT = o => { const s = T(o); return /[؀-ۿ]/.test(s) ? s : `<span class="ltr">${s}</span>`; };
+
+/* ---- الكاميرا: CK معامل التكبير الحالي. كل مقاس نصّ أو حدّ يُقسَم عليه حتى يبقى
+        ما تراه العين بالحجم نفسه مهما اقتربت الكاميرا. هذه النقطة التي تنكسر إن نُسيت. ---- */
+let CK = 1, CAMR = null;
+const F  = s => (s / CK).toFixed(2);
+const SW = s => (s / CK).toFixed(2);
+function tx(x, y, s, o){ o = o || {};
+  return `<text x="${x}" y="${y}" fill="${o.f || '#e6edf3'}" font-size="${F(o.s || 14)}" text-anchor="${o.a || 'middle'}"
+   font-weight="${o.w || 400}" opacity="${o.o == null ? 1 : o.o}" ${o.extra || ''}>${s}</text>`; }
+function rc(x, y, w, h, o){ o = o || {};
+  return `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${o.r == null ? 8 : o.r}" fill="${o.f || 'none'}"
+   stroke="${o.s || 'none'}" stroke-width="${SW(o.sw || 1.5)}" opacity="${o.o == null ? 1 : o.o}" ${o.extra || ''}/>`; }
+const cir = (cx, cy, r, o) => { o = o || {}; return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${o.f || 'none'}"
+   stroke="${o.s || 'none'}" stroke-width="${SW(o.sw || 1.5)}" opacity="${o.o == null ? 1 : o.o}"/>`; };
+const ln = (x1, y1, x2, y2, o) => { o = o || {}; return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${o.s || '#2b3644'}"
+   stroke-width="${SW(o.sw || 2)}" stroke-dasharray="${o.d || 'none'}" stroke-linecap="round" opacity="${o.o == null ? 1 : o.o}"/>`; };
+
+/* ---- قياس النصّ قبل رسمه: لا يُرسم نصّ طويل بـ tx مباشرة، بل بـ txFit أو داخل card ---- */
+let _MC = null;
+function _ctx(){ if (_MC !== null) return _MC; try{ _MC = document.createElement("canvas").getContext("2d"); }catch(e){ _MC = false; } return _MC; }
+const FONT = '"IBM Plex Sans Arabic",Segoe UI,Tahoma,Arial,sans-serif';
+function k1(str, weight){                                  /* عرض النصّ عند حجم خط 1 */
+  const c = _ctx(); if (!c) return String(str).length * .52;
+  c.font = (weight || 400) + " 100px " + FONT; return c.measureText(String(str)).width / 100; }
+const wWidth = (str, s, weight) => (s / CK) * k1(str, weight);          /* العرض بوحدات العالم */
+function fitSize(str, boxW, maxS, weight){ const k = k1(str, weight) || .5; return Math.max(8, Math.min(maxS, (boxW * CK) / k)); }
+function wrapWorld(str, boxW, s, weight){
+  const words = String(str).split(/\s+/), out = []; let cur = "";
+  words.forEach(w => { const t = cur ? cur + " " + w : w; if (!cur || wWidth(t, s, weight) <= boxW) cur = t; else { out.push(cur); cur = w; } });
+  if (cur) out.push(cur); return out; }
+function txFit(x, y, str, maxW, maxS, o){ o = o || {}; return tx(x, y, str, Object.assign({}, o, {s: fitSize(str, maxW, maxS, o.w || 700)})); }
+/* بطاقة ارتفاعها ناتج من محتواها، ومحتواها يُقلَّص أو يُلَفّ ليتّسع. لون التعبئة #0d1826 هو ما يتعرّف به حارس التخطيط على البطاقات */
+function card(x, y, w, lines, o){ o = o || {};
+  const pad = o.pad == null ? 34 : o.pad, inner = w - pad * 2, rows = []; let H = pad;
+  lines.forEach(L => {
+    const maxS = L.s || 30, wt = L.w || 700, str = T(L.t);
+    let s = fitSize(str, inner, maxS, wt), subs = [str];
+    if (s < maxS * .74){ s = maxS; subs = wrapWorld(str, inner, s, wt); let g = 0;
+      while (subs.some(t => wWidth(t, s, wt) > inner) && g++ < 60){ s -= 1; subs = wrapWorld(str, inner, s, wt); } }
+    subs.forEach(t => { H += (s / CK) * 1.06; rows.push({t, s, wt, c: L.c, y: H}); H += (s / CK) * .36; });
+    H += (L.gap == null ? 14 : L.gap); });
+  H += pad - 14;
+  let g = rc(x, y, w, H, {f: o.f || "#0d1826f4", s: o.s || "#4dabf7", sw: 5, r: 26});
+  rows.forEach(r => { g += tx(x + w/2, y + r.y, r.t, {f: r.c || "#e6edf3", s: r.s, w: r.wt}); });
+  return g; }
+
+/* ═══════════════════════════════════════════════════════════════
+   1 · العالم — قرص دوّار واحد لكل المنصّة
+   قرص نصف قطره 3 m، عليه ثلاثة راكبين على نصف قطر واحد عند 1 و2 و3 m.
+   الأدوار بلون ثابت في كل المحطات: نصف القطر أزرق · القوس أخضر · الزاوية برتقالي.
+   ═══════════════════════════════════════════════════════════════ */
+const WW = 2000, WH = 1240;
+const CLR = {rad:"#4dabf7", radL:"#a5d8ff", arc:"#37b24d", arcL:"#8ce99a", ang:"#f59f00", angL:"#ffc078",
+             gold:"#ffd43b", txt:"#e6edf3", muted:"#96a3b3", rim:"#2f5276"};
+const C = {x:620, y:620}, R = 420, RID = [140, 280, 420];          /* 140 وحدة = 1 m */
+const PI = Math.PI, TAU = 2 * Math.PI;
+const P = (r, a) => [C.x + r * Math.cos(a), C.y - r * Math.sin(a)];  /* عكس عقارب الساعة موجب */
+const f1 = v => (+v).toFixed(1);
+const M = s => `<span class="ltr">${s}</span>`;                     /* رمز لاتيني داخل نصّ HTML عربي */
+
+/* الكاميرات: [x, y, w] — الارتفاع دائماً = العرض × 0.62 */
+const CAMS = { wide:[0, 0, 2000], rim:[480, 170, 800], arcs:[420, 160, 1000] };
+const LOC  = { wide:{ar:"القرص كاملاً", en:"the whole disc"}, rim:{ar:"عند الحافة", en:"at the rim"},
+               arcs:{ar:"أقواس الراكبين", en:"the riders' arcs"} };
+
+const inCam = (x0, y0, x1, y1) => CAMR && x0 >= CAMR.x && x1 <= CAMR.x + CAMR.w && y0 >= CAMR.y && y1 <= CAMR.y + CAMR.h;
+/* مسمّى يُرسم فقط إن وقع كاملاً داخل الكاميرا. y هو مركز السطر عمودياً */
+function lab(x, y, str, s, o){ o = o || {}; const wt = o.w || 700, w = wWidth(str, s, wt), h = s / CK;
+  if (!inCam(x - w/2 - 4, y - h * .6, x + w/2 + 4, y + h * .5)) return "";
+  return tx(x, y + h * .35, str, Object.assign({}, o, {s, w:wt})); }
+/* مسمّى لاتيني خالص — الاتجاه على عنصر النصّ نفسه */
+const labL = (x, y, str, s, o) => lab(x, y, str, s, Object.assign({}, o || {}, {extra:'direction="ltr"'}));
+const path = (d, o) => { o = o || {}; return d ? `<path d="${d}" fill="${o.f || 'none'}" stroke="${o.s || 'none'}" stroke-width="${SW(o.sw || 2)}"
+   stroke-linecap="${o.cap || 'round'}" opacity="${o.o == null ? 1 : o.o}"/>` : ""; };
+function arcD(r, a0, a1){ const d = a1 - a0; if (d <= 1e-6) return "";
+  if (d >= TAU - 1e-6){ const [x0,y0] = P(r, 0), [x1,y1] = P(r, PI);
+    return `M${f1(x0)},${f1(y0)} A${r},${r} 0 1 0 ${f1(x1)},${f1(y1)} A${r},${r} 0 1 0 ${f1(x0)},${f1(y0)}`; }
+  const [x0,y0] = P(r, a0), [x1,y1] = P(r, a1);
+  return `M${f1(x0)},${f1(y0)} A${r},${r} 0 ${d > PI ? 1 : 0} 0 ${f1(x1)},${f1(y1)}`; }
+const degOf = a => a * 180 / PI;
+
+function mk(o){ return Object.assign({rot:0, riders:0, rlab:0, ref:1, axis:0, radLine:0, straight:0, strings:0, sEqR:0, radEnd:0, radRot:0,
+  wedge:0, wl:"", arcs:0, arcShow:[1,1,1], arcLab:0, arcTxt:null, hlRider:-1, deg:0, board:null, overlay:null}, o || {}); }
+
+function world(S){
+  let g = rc(0, 0, WW, WH, {f:"#0b1119", r:0});
+  /* حلقة الدرجات */
+  if (S.deg){
+    for (let k = 0; k < 12; k++){ const a = k * PI / 6, [x0,y0] = P(R + 4, a), [x1,y1] = P(R + (k % 3 ? 16 : 30), a);
+      g += ln(x0, y0, x1, y1, {s:"#4b6a8c", sw:k % 3 ? 1.5 : 2.5}); }
+    [[0,"0°"], [PI/2,"90°"], [PI,"180°"], [1.5*PI,"270°"]].forEach(([a,t]) => { const [x,y] = P(R + 78, a); g += labL(x, y, t, 17, {f:CLR.muted}); });
+  }
+  /* القرص ومسارات الراكبين */
+  g += cir(C.x, C.y, R, {f:"#122034", s:CLR.rim, sw:3});
+  g += cir(C.x, C.y, RID[0], {s:"#1f3149", sw:1.2}) + cir(C.x, C.y, RID[1], {s:"#1f3149", sw:1.2});
+  for (let k = 0; k < 4; k++){ const [x,y] = P(R - 6, S.rot + k * PI / 2); g += ln(C.x, C.y, x, y, {s:"#1d3049", sw:2}); }
+  /* خط الإسناد */
+  if (S.ref){ g += ln(C.x, C.y, C.x + R + (S.deg ? 40 : 110), C.y, {s:"#7d8ea3", sw:1.8, d:"10 8"});
+    if (!S.deg) g += lab(C.x + R + 10, C.y + 44, T({ar:"خط الإسناد", en:"reference line"}), 15, {f:CLR.muted}); }
+  /* الزاوية (الدور 3) */
+  if (S.wedge > 0){ const w = Math.min(S.wedge, TAU);
+    if (w >= TAU - 1e-6) g += cir(C.x, C.y, 110, {f:"#f59f0033", s:CLR.ang, sw:2.5});
+    else { const [x0,y0] = P(110, 0), [x1,y1] = P(110, w);
+      g += path(`M${C.x},${C.y} L${f1(x0)},${f1(y0)} A110,110 0 ${w > PI ? 1 : 0} 0 ${f1(x1)},${f1(y1)} Z`, {f:"#f59f0033", s:CLR.ang, sw:2.5}); }
+    if (S.wl){ const [lx,ly] = P(68, w >= TAU - 1e-6 ? PI : w / 2); g += labL(lx, ly, S.wl, 17, {f:CLR.angL, w:800}); }
+  }
+  /* نصف القطر (الدور 1) */
+  if (S.radLine){ const [x,y] = P(R, 0); g += ln(C.x, C.y, x, y, {s:CLR.rad, sw:4});
+    g += labL(C.x + R / 2, C.y + 32, "r = 3 m", 16, {f:CLR.rad}); }
+  if (S.radEnd && S.strings > 0 && S.strings < TAU - 1e-6){ const [x,y] = P(R, S.strings); g += ln(C.x, C.y, x, y, {s:CLR.rad, sw:3, o:.8}); }
+  if (S.radRot && S.rot > 0){ const [x,y] = P(R, S.rot); g += ln(C.x, C.y, x, y, {s:CLR.rad, sw:3, o:.75}); }
+  if (S.straight){ g += ln(C.x, C.y - 46, C.x + R, C.y - 46, {s:CLR.radL, sw:9});
+    g += ln(C.x, C.y - 60, C.x, C.y - 32, {s:CLR.radL, sw:2}) + ln(C.x + R, C.y - 60, C.x + R, C.y - 32, {s:CLR.radL, sw:2});
+    g += lab(C.x + R / 2, C.y - 76, T({ar:"خيط طوله r", en:"a string of length r"}), 16, {f:CLR.radL}); }
+  /* خيوط بطول نصف القطر ملفوفة على الحافة */
+  if (S.strings > 0){ const n = Math.min(S.strings, TAU);
+    for (let k = 0; k < n - 1e-6; k++){ const a0 = k, a1 = Math.min(k + 1, n);
+      g += path(arcD(R, a0, a1), {s:k % 2 ? CLR.radL : CLR.rad, sw:12, cap:"butt"});
+      if (a1 === k + 1){ const [x0,y0] = P(R - 16, a1), [x1,y1] = P(R + 16, a1); g += ln(x0, y0, x1, y1, {s:CLR.txt, sw:2}); }
+      if (a1 - a0 > .6){ const [x,y] = P(R - 44, (a0 + a1) / 2); g += labL(x, y, String(k + 1), 15, {f:CLR.rad, w:800}); } }
+    if (S.sEqR){ g += path(arcD(R + 22, 0, 1), {s:CLR.arc, sw:5}); const [x,y] = P(R + 58, .5); g += labL(x, y, "s = r", 16, {f:CLR.arcL, w:800}); }
+  }
+  /* الأقواس (الدور 2) */
+  if (S.arcs > 0) RID.forEach((r, i) => { if (!S.arcShow[i]) return;
+    g += path(arcD(r, 0, S.arcs), {s:CLR.arc, sw:7});
+    if (S.arcLab){ const [x,y] = P(r + 48, S.arcs / 2), t = (S.arcTxt && S.arcTxt[i]) || ["s₁","s₂","s₃"][i]; g += labL(x, y, t, 17, {f:CLR.arcL, w:800}); } });
+  /* المحور */
+  g += cir(C.x, C.y, 9, {f:CLR.txt});
+  if (S.axis) g += lab(C.x - 64, C.y - 18, T({ar:"المحور", en:"axis"}), 14, {f:CLR.muted});
+  /* الراكبون */
+  if (S.riders) RID.forEach((r, i) => { const [x,y] = P(r, S.rot);
+    if (S.hlRider === i) g += cir(x, y, 38, {s:CLR.gold, sw:3});
+    g += cir(x, y, 24, {f:"#e6edf3", s:"#0b1119", sw:3});
+    g += tx(x, y + (14 / CK) * .36, String(i + 1), {f:"#0b1119", s:14, w:800});
+    if (S.rlab) g += labL(x, y - 46, (i + 1) + " m", 15, {f:CLR.rad}); });
+  /* لوحة القياس — في مكان بلا مسمّيات */
+  if (S.board){ const lines = Array.isArray(S.board) ? S.board : BOARD[S.board]();
+    g += card(1180, 150, 760, lines, {pad:34, s:"#2f5276"}); }
+  if (S.overlay === "done") g += card(1180, 190, 760, [
+      {t:{ar:"الخلاصة", en:"Summary"}, s:30, c:CLR.gold},
+      {t:{ar:"الدوران يُقاس بالزاوية، لا بالمسافة", en:"Rotation is measured by angle, not distance"}, s:24},
+      {t:ltr("θ = s / r"), s:34, c:CLR.ang},
+      {t:{ar:"راديان واحد: قوس طوله نصف القطر", en:"1 radian: an arc as long as the radius"}, s:22, c:CLR.muted},
+      {t:ltr("1 rad ≈ 57.3° · π rad = 180° · 2π rad = 360°"), s:22, c:CLR.radL}], {pad:34, s:CLR.gold});
+  return g;
+}
+function stageHTML(S, camKey){
+  const c = CAMS[camKey], k = 1000 / c[2]; CK = k; CAMR = {x:c[0], y:c[1], w:c[2], h:c[2] * .62};
+  return SV("0 0 1000 620", `<g transform="scale(${k.toFixed(4)}) translate(${(-c[0]).toFixed(1)},${(-c[1]).toFixed(1)})">` + world(mk(S)) + `</g>`);
+}
+
+/* محتوى لوحة القياس لكل خطوة */
+const BL = (ar, en, s, c) => ({t:{ar, en}, s:s || 24, c});
+const BX = (str, s, c) => ({t:ltr(str), s:s || 26, c});
+const BOARD = {
+  intro:  () => [BL("كيف نقيس مقدار الدوران؟", "How do we measure rotation?", 30, CLR.gold), BL("ثلاثة راكبين على نصف قطر واحد", "three riders on one radius", 22, CLR.muted),
+                 BX("r₁ = 1 m · r₂ = 2 m · r₃ = 3 m", 24, CLR.rad)],
+  hook:   () => [BL("دار القرص — فماذا قطع كل راكب؟", "The disc turned — how far did each rider go?", 26), BX("s₁ = 1.05 m", 26, CLR.arcL), BX("s₂ = 2.09 m", 26, CLR.arcL),
+                 BX("s₃ = 3.14 m", 26, CLR.arcL), BL("المسافات مختلفة، والدوران واحد", "different distances, one rotation", 24, CLR.gold)],
+  unit:   () => [BL("راديان واحد", "One radian", 30, CLR.gold), BX("s = r  ⇒  θ = 1 rad", 28, CLR.ang), BX("1 rad ≈ 57.3°", 28, CLR.angL),
+                 BL("زاوية مركزية تقابل قوساً طوله نصف القطر", "a central angle facing an arc as long as the radius", 20, CLR.muted)],
+  count2: () => [BL("خيطان على الحافة", "Two strings on the rim", 28, CLR.gold), BX("θ = 2 rad ≈ 114.6°", 28, CLR.angL), BL("كل خيط يضيف راديان", "each string adds one radian", 22, CLR.muted)],
+  count3: () => [BL("ثلاثة خيوط: دون نصف الدورة بقليل", "Three strings: just short of half a turn", 26, CLR.gold), BX("3 rad ≈ 171.9°", 28, CLR.angL),
+                 {t:{ar:"نصف دورة = " + ltr("π rad ≈ 3.14 rad = 180°"), en:ltr("half a turn = π rad ≈ 3.14 rad = 180°")}, s:22, c:CLR.radL}],
+  count6: () => [BL("ستة خيوط: تبقى فجوة", "Six strings: a gap remains", 28, CLR.gold), BX("6 rad ≈ 343.8°", 28, CLR.angL),
+                 {t:{ar:"الفجوة ≈ " + ltr("0.28") + " من خيط", en:"the gap ≈ " + ltr("0.28") + " of a string"}, s:22, c:CLR.muted}],
+  full:   () => [BL("دورة كاملة", "One full turn", 30, CLR.gold), BX("θ = 2π rad ≈ 6.28 rad = 360°", 26, CLR.angL),
+                 {t:{ar:"لذلك محيط الدائرة = " + ltr("2πr"), en:"so the circumference = " + ltr("2πr")}, s:24, c:CLR.radL}],
+  def:    () => [BL("الزاوية بالراديان", "Angle in radians", 28, CLR.gold), BX("θ = s / r", 40, CLR.ang),
+                 BL("طول القوس ÷ نصف القطر", "arc length ÷ radius", 22, CLR.muted), BX("s = r θ", 30, CLR.arcL)],
+  table:  () => [{t:{ar:"دار القرص " + ltr("θ = π/3 rad = 60°"), en:"The disc turned " + ltr("θ = π/3 rad = 60°")}, s:24, c:CLR.angL},
+                 BX("s₁ / r₁ = 1.05 m / 1 m ≈ 1.05", 22, CLR.arcL), BX("s₂ / r₂ = 2.09 m / 2 m ≈ 1.05", 22, CLR.arcL), BX("s₃ / r₃ = 3.14 m / 3 m ≈ 1.05", 22, CLR.arcL),
+                 BL("النسبة واحدة للجميع: هي الزاوية", "the same ratio for all: the angle", 24, CLR.gold)],
+  inverse:() => [BL("الصيغة المعكوسة", "The inverse form", 28, CLR.gold), BX("s = r θ", 36, CLR.arcL), BX("s₃ = 3 m × π/3 = π m ≈ 3.14 m", 22, CLR.arcL),
+                 BL("القوس يتناسب طردياً مع نصف القطر", "the arc is proportional to the radius", 22, CLR.muted)],
+  conv:   () => [BL("مفتاح التحويل", "The conversion key", 28, CLR.gold), BX("180° = π rad", 34, CLR.angL), BX("θ(rad) = θ(°) × π / 180", 24, CLR.radL), BX("θ(°) = θ(rad) × 180 / π", 24, CLR.radL)],
+  conv2:  () => [BL("زوايا شائعة", "Common angles", 28, CLR.gold), BX("90° = π/2 · 45° = π/4", 26, CLR.angL), BX("60° = π/3 · 30° = π/6", 26, CLR.angL), BX("270° = 3π/2 · 360° = 2π", 26, CLR.angL)],
+  cancel: () => [BL("لماذا الراديان بلا وحدة؟", "Why is the radian unitless?", 28, CLR.gold), BX("θ = s / r = m / m", 32, CLR.ang),
+                 BL("تختصر وحدتا الطول، فيبقى عدد", "the length units cancel, leaving a number", 22, CLR.muted),
+                 {t:{ar:ltr("rad") + " اسمٌ يذكّر بأن العدد زاوية", en:ltr("rad") + " is a label: the number is an angle"}, s:22, c:CLR.radL}]
+};
+
+/* ═══════════════════════════════════════════════════════════════
+   2 · شاهد — رحلة واحدة على القرص: من خيطٍ بطول نصف القطر إلى الراديان
+   ═══════════════════════════════════════════════════════════════ */
+const R3 = PI / 3;
+const HOOK = {riders:1, rot:R3, arcs:R3, radRot:1};
+const STEPS = [
+ {cam:"wide", act:0, s:{riders:1, rlab:1, axis:1, board:"intro"},
+  cap:{ar:`قرص نصف قطره ${M("3 m")} يدور حول محوره، وعليه ثلاثة راكبين على نصف قطر واحد، على بُعد ${M("1 m")} و${M("2 m")} و${M("3 m")} من المحور. حين يدور القرص: بأيّ مقياس نصف <b>مقدار الدوران</b>؟`,
+       en:`A disc of radius ${M("3 m")} turns about its axis. Three riders sit on one radius, ${M("1 m")}, ${M("2 m")} and ${M("3 m")} from the axis. When the disc turns, what do we use to describe <b>how much it turned</b>?`},
+  who:{r1:{ar:"يحدّد بُعد كل راكب عن المحور.", en:"sets each rider's distance from the axis."}}},
+ {cam:"wide", act:0, s:Object.assign({board:"hook"}, HOOK),
+  cap:{ar:`دار القرص. الراكب الخارجي قطع ${M("3.14 m")} والداخلي ${M("1.05 m")} فقط، ومع ذلك دار الثلاثة <b>الدوران نفسه</b>. المسافة إذن لا تصلح مقياساً للدوران، لأنها تختلف من نقطة إلى أخرى. نحتاج مقياساً واحداً لكل نقاط القرص.`,
+       en:`The disc turned. The outer rider went ${M("3.14 m")}, the inner one only ${M("1.05 m")}, yet all three turned <b>by the same amount</b>. So distance cannot measure rotation: it changes from point to point. We need one measure for every point of the disc.`},
+  who:{r2:{ar:"يختلف من راكب إلى آخر.", en:"differs from rider to rider."}, r3:{ar:"واحدة للراكبين الثلاثة.", en:"the same for all three riders."}}},
+ {cam:"rim", act:1, s:{radLine:1, axis:1},
+  cap:{ar:`لنبنِ هذا المقياس من القرص نفسه. نبدأ بـ<b>نصف القطر</b>: المسافة من المحور إلى الحافة، وهي هنا ${M("r = 3 m")}.`,
+       en:`Let us build that measure from the disc itself. Start with the <b>radius</b>: the distance from the axis to the rim, here ${M("r = 3 m")}.`},
+  who:{r1:{ar:"من المحور إلى الحافة.", en:"from the axis to the rim."}}},
+ {cam:"rim", act:1, s:{radLine:1, straight:1, axis:1},
+  cap:{ar:`نقصّ خيطاً <b>طوله يساوي نصف القطر تماماً</b>. هذا الخيط سيكون مسطرتنا على الحافة.`,
+       en:`Cut a string <b>exactly as long as the radius</b>. This string will be our ruler on the rim.`},
+  who:{r1:{ar:"يُنسخ في خيط بطوله نفسه.", en:"copied into a string of the same length."}}},
+ {cam:"rim", act:1, s:{radLine:1, strings:1, sEqR:1, radEnd:1, wedge:1, wl:"1 rad"},
+  cap:{ar:`نلفّ الخيط على الحافة بدءاً من خط الإسناد. الزاوية المركزية التي تقابل قوساً <b>طوله يساوي نصف القطر</b> اسمها <b>راديان واحد</b>، ونكتبها ${M("1 rad")}.`,
+       en:`Wrap the string along the rim from the reference line. The central angle facing an arc <b>as long as the radius</b> is called <b>one radian</b>, written ${M("1 rad")}.`},
+  who:{r1:{ar:"صار قوساً على الحافة.", en:"is now an arc on the rim."}, r2:{ar:"طوله يساوي r تماماً.", en:"exactly r long."}, r3:{ar:"راديان واحد.", en:"one radian."}}},
+ {cam:"wide", act:1, s:{radLine:1, strings:1, sEqR:1, radEnd:1, wedge:1, wl:"1 rad", board:"unit"},
+  cap:{ar:`كم درجة في الراديان؟ نحو ${M("57.3°")}. لاحظ أن التعريف لم يذكر حجم القرص: في أي دائرة، القوس الذي يساوي نصف قطرها يقابل الزاوية نفسها.`,
+       en:`How many degrees in a radian? About ${M("57.3°")}. Notice the definition never mentions the size of the disc: in any circle, an arc equal to its radius faces the same angle.`},
+  who:{r3:{ar:"لا تعتمد على حجم الدائرة.", en:"does not depend on the circle's size."}}},
+ {cam:"wide", act:2, s:{radLine:1, strings:2, radEnd:1, wedge:2, wl:"2 rad", board:"count2"},
+  cap:{ar:`خيط ثانٍ بالطول نفسه: الزاوية الآن ${M("2 rad")}. كل خيط بطول نصف القطر يضيف راديان واحداً.`,
+       en:`A second string of the same length: the angle is now ${M("2 rad")}. Each radius-long string adds one radian.`},
+  who:{r1:{ar:"خيط ثانٍ بطوله.", en:"a second string of its length."}, r3:{ar:"2 rad.", en:"2 rad."}}},
+ {cam:"wide", act:2, s:{radLine:1, strings:3, radEnd:1, wedge:3, wl:"3 rad", board:"count3"},
+  cap:{ar:`ثلاثة خيوط تكاد تبلغ نصف الدورة ولا تبلغها. نصف الدورة يحتاج ${M("π ≈ 3.14")} خيطاً، أي ${M("π rad = 180°")}.`,
+       en:`Three strings almost reach half a turn, but not quite. Half a turn needs ${M("π ≈ 3.14")} strings, so ${M("π rad = 180°")}.`},
+  who:{r3:{ar:"دون 180° بقليل.", en:"just under 180°."}}},
+ {cam:"wide", act:2, s:{radLine:1, strings:6, radEnd:1, wedge:6, wl:"6 rad", board:"count6"},
+  cap:{ar:`ستة خيوط ولم تكتمل الدورة: تبقى فجوة تعادل نحو ${M("0.28")} من خيط. فكم خيطاً تحتاج الدورة الكاملة؟`,
+       en:`Six strings and the turn is still not complete: a gap of about ${M("0.28")} of a string remains. So how many strings does a full turn need?`},
+  who:{r1:{ar:"ستة خيوط.", en:"six strings."}, r3:{ar:"نحو 344° فقط.", en:"only about 344°."}}},
+ {cam:"wide", act:2, s:{radLine:1, strings:TAU, wedge:TAU, wl:"2π rad", board:"full"},
+  cap:{ar:`الدورة الكاملة = ${M("2π ≈ 6.28")} خيطاً، أي ${M("2π rad = 360°")}. وهذا سبب أن محيط الدائرة ${M("2πr")}: المحيط يتّسع لـ${M("2π")} من أنصاف الأقطار.`,
+       en:`A full turn = ${M("2π ≈ 6.28")} strings, so ${M("2π rad = 360°")}. That is why the circumference is ${M("2πr")}: it holds ${M("2π")} radii.`},
+  who:{r1:{ar:"2π خيطاً تغطي المحيط.", en:"2π strings cover the circumference."}, r3:{ar:"2π rad في الدورة.", en:"2π rad per turn."}}},
+ {cam:"wide", act:3, s:{riders:1, rlab:1, board:"def"},
+  cap:{ar:`نعمّم: لأي قوس طوله ${M("s")} على دائرة نصف قطرها ${M("r")}، الزاوية بالراديان هي ${M("θ = s / r")}: عدد أنصاف الأقطار التي يتّسع لها القوس.`,
+       en:`Generalise: for any arc of length ${M("s")} on a circle of radius ${M("r")}, the angle in radians is ${M("θ = s / r")}: how many radii fit along the arc.`},
+  who:{r1:{ar:"المقسوم عليه.", en:"the divisor."}, r2:{ar:"المقسوم.", en:"the dividend."}, r3:{ar:"ناتج القسمة.", en:"the quotient."}}},
+ {cam:"arcs", act:3, s:Object.assign({wedge:R3, wl:"π/3", arcLab:1}, HOOK),
+  cap:{ar:`يدور القرص ${M("π/3 rad")} أي ${M("60°")}. كل راكب يرسم قوساً على مساره: ${M("s₁")} و${M("s₂")} و${M("s₃")}، وأطوالها مختلفة.`,
+       en:`The disc turns ${M("π/3 rad")}, that is ${M("60°")}. Each rider traces an arc on its path: ${M("s₁")}, ${M("s₂")} and ${M("s₃")}, of different lengths.`},
+  who:{r2:{ar:"ثلاثة أقواس بثلاثة أطوال.", en:"three arcs, three lengths."}, r3:{ar:"π/3 للجميع.", en:"π/3 for all."}}},
+ {cam:"wide", act:3, s:Object.assign({wedge:R3, wl:"π/3", board:"table"}, HOOK),
+  cap:{ar:`اقسم كل قوس على نصف قطره: الناتج نحو ${M("1.05")} للثلاثة. القوس يتضاعف حين يتضاعف نصف القطر، فتبقى النسبة، أي الزاوية، ثابتة.`,
+       en:`Divide each arc by its radius: about ${M("1.05")} for all three. The arc doubles when the radius doubles, so the ratio, the angle, stays fixed.`},
+  who:{r1:{ar:"1 و2 و3 m.", en:"1, 2 and 3 m."}, r2:{ar:"يتناسب مع r.", en:"proportional to r."}, r3:{ar:"1.05 rad للجميع.", en:"1.05 rad for all."}}},
+ {cam:"wide", act:3, s:Object.assign({wedge:R3, wl:"π/3", board:"inverse"}, HOOK),
+  cap:{ar:`والعكس: إذا عرفنا الزاوية ونصف القطر حسبنا القوس ${M("s = rθ")}. الراكب الخارجي: ${M("3 × π/3 = π ≈ 3.14 m")}. شرط واحد: أن تكون ${M("θ")} بالراديان.`,
+       en:`Conversely, knowing the angle and the radius gives the arc: ${M("s = rθ")}. The outer rider: ${M("3 × π/3 = π ≈ 3.14 m")}. One condition: ${M("θ")} must be in radians.`},
+  who:{r2:{ar:"يُحسب من r وθ.", en:"computed from r and θ."}}},
+ {cam:"wide", act:4, s:{deg:1, wedge:PI, wl:"π rad = 180°", board:"conv"},
+  cap:{ar:`نصف الدورة ${M("180° = π rad")}. هذه المساواة وحدها تكفي للتحويل في الاتجاهين.`,
+       en:`Half a turn: ${M("180° = π rad")}. This one equality is enough to convert either way.`},
+  who:{r3:{ar:"بالدرجات وبالراديان.", en:"in degrees and in radians."}}},
+ {cam:"wide", act:4, s:{deg:1, wedge:PI / 2, wl:"π/2", board:"conv2"},
+  cap:{ar:`ربع الدورة ${M("90° = π/2")}، والثُّمن ${M("45° = π/4")}. اضرب في ${M("π/180")} لتنتقل من الدرجات إلى الراديان، وفي ${M("180/π")} للعكس.`,
+       en:`A quarter turn: ${M("90° = π/2")}; an eighth: ${M("45° = π/4")}. Multiply by ${M("π/180")} to go from degrees to radians, and by ${M("180/π")} to go back.`},
+  who:{r3:{ar:"ربع دورة.", en:"a quarter turn."}}},
+ {cam:"wide", act:5, s:Object.assign({wedge:R3, wl:"π/3", board:"cancel"}, HOOK),
+  cap:{ar:`${M("θ = s / r")} قسمة <b>متر على متر</b>، فتختصر الوحدتان ويبقى عدد مجرّد. نكتب ${M("rad")} لنتذكّر أن العدد زاوية، ونسقطه عند الحساب: ${M("s = rθ")} تعطي متراً مباشرة.`,
+       en:`${M("θ = s / r")} divides <b>metres by metres</b>, so the units cancel and a pure number remains. We write ${M("rad")} as a reminder that it is an angle, and drop it in calculations: ${M("s = rθ")} gives metres directly.`},
+  who:{r1:{ar:"بالمتر.", en:"in metres."}, r2:{ar:"بالمتر.", en:"in metres."}, r3:{ar:"عدد بلا وحدة.", en:"a pure number."}}},
+ {cam:"wide", act:6, s:Object.assign({wedge:R3, wl:"π/3", overlay:"done"}, HOOK),
+  cap:{ar:`<b>الخلاصة:</b> الدوران يُقاس بالزاوية لأنها واحدة لكل نقاط القرص. الراديان قوس بطول نصف القطر، والدورة ${M("2π rad")}، و${M("θ = s / r")} تربط الزاوية بالقوس ونصف القطر.`,
+       en:`<b>Summary:</b> rotation is measured by angle because it is the same for every point on the disc. A radian is an arc as long as the radius, a full turn is ${M("2π rad")}, and ${M("θ = s / r")} links angle, arc and radius.`},
+  who:{r1:{ar:"المسطرة.", en:"the ruler."}, r2:{ar:"ما تقطعه النقطة.", en:"what the point travels."}, r3:{ar:"مقدار الدوران.", en:"how much it turned."}}}
+];
+const ACTS = [ {t:{ar:"مقياس للدوران؟", en:"A measure of rotation?"}, from:0}, {t:{ar:"خيط بطول نصف القطر", en:"A radius-long string"}, from:2},
+               {t:{ar:"كم راديان في الدورة؟", en:"Radians in a turn"}, from:6}, {t:{ar:ltr("θ = s / r"), en:"θ = s / r"}, from:10},
+               {t:{ar:"درجات وراديان", en:"Degrees and radians"}, from:14}, {t:{ar:"بلا وحدة", en:"Unitless"}, from:16}, {t:{ar:"الخلاصة", en:"Summary"}, from:17} ];
+const ROLES = [
+  {k:"r1", nm:{ar:"نصف القطر r", en:"radius r"}, col:"#4dabf7", job:{ar:"المسطرة", en:"the ruler"}, idle:{ar:"المسافة من المحور إلى النقطة، ومنه يُقصّ الخيط", en:"the distance from the axis to the point; the string is cut from it"}},
+  {k:"r2", nm:{ar:"طول القوس s", en:"arc length s"}, col:"#37b24d", job:{ar:"المسافة على المسار", en:"distance along the path"}, idle:{ar:"ما تقطعه النقطة على مسارها الدائري", en:"how far the point travels along its circle"}},
+  {k:"r3", nm:{ar:"الزاوية θ", en:"angle θ"}, col:"#f59f00", job:{ar:"مقدار الدوران", en:"how much it turned"}, idle:{ar:"نسبة القوس إلى نصف القطر، واحدة لكل نقاط القرص", en:"arc over radius; the same for every point of the disc"}}
+];
+
+/* ═══════════════════════════════════════════════════════════════
+   3 · نفّذ — مهام مفتوحة كلها بترتيب مقترح، على القرص نفسه
+   ═══════════════════════════════════════════════════════════════ */
+const DONE = { do:{}, quiz:{} };
+function fb(host, kind, html){ let b = host.querySelector(".fb"); if (!b){ b = document.createElement("div"); b.className = "fb"; host.appendChild(b); }
+  b.className = "fb show " + kind; b.innerHTML = html; }
+function markDone(id){ DONE.do[id] = true; save(); refreshDoNav(); refreshDots(); }
+function chooser(opts, onPick){ const d = document.createElement("div"); d.className = "pool";
+  d.innerHTML = opts.map((o,i) => `<span class="piece" data-i="${i}">${OT(o)}</span>`).join("");
+  d.onclick = e => { const p = e.target.closest(".piece"); if (p) onPick(+p.dataset.i, d); }; return d; }
+const box3 = (host, html) => { const b = document.createElement("div"); b.className = "body"; b.innerHTML = html; host.appendChild(b); return b; };
+const big = s => `<div style="font-size:1.25rem;font-weight:800;margin:6px 0">${s}</div>`;
+const fmtDeg = d => (Math.abs(d - Math.round(d)) < .05 ? String(Math.round(d)) : d.toFixed(1)) + "°";
+
+/* t2 و t3: قيم القطع */
+const DEG_TARGETS = [{d:180, a:"π"}, {d:90, a:"π/2"}, {d:360, a:"2π"}, {d:60, a:"π/3"}];
+const RAD_PIECES  = [["π/3",60], ["2π",360], ["π/2",90], ["π/4",45], ["π",180], ["3π/2",270]];
+const RAD_TARGETS = [{r:"1 rad", a:1, deg:"57.3°"}, {r:"π/6", a:PI/6, deg:"30°"}, {r:"3π/2", a:1.5*PI, deg:"270°"}];
+const DEG_PIECES  = [["30°",30], ["90°",90], ["57.3°",57.3], ["180°",180], ["270°",270], ["1°",1]];
+/* t4 */
+const T4_TH = .5, T4_ANS = ["0.5 m", "1.0 m", "1.5 m"], T4_POOL = ["1.5 m", "0.17 m", "1.0 m", "6.0 m", "0.5 m", "2.0 m"];
+/* t6 */
+const T6_ITEMS = [
+  {t:{ar:"طول القوس الذي يقطعه الراكب", en:"the arc length the rider travels"}, same:false,
+   why:{ar:`${M("s = rθ")} يتناسب مع ${M("r")}: الراكب الخارجي يقطع ثلاثة أضعاف ما يقطعه الداخلي.`, en:`${M("s = rθ")} is proportional to ${M("r")}: the outer rider travels three times as far as the inner one.`}},
+  {t:{ar:"الزاوية التي يدورها الراكب", en:"the angle the rider turns through"}, same:true,
+   why:{ar:"نقاط القرص كلها تدور معاً، فيمسح نصف القطر المارّ بها الزاوية نفسها.", en:"All points of the disc turn together, so the radius through them sweeps the same angle."}},
+  {t:{ar:"نصف قطر مسار الراكب", en:"the radius of the rider's path"}, same:false,
+   why:{ar:"كل راكب على بُعد مختلف من المحور: 1 و2 و3 m.", en:"Each rider is at a different distance from the axis: 1, 2 and 3 m."}},
+  {t:{ar:`النسبة ${M("s / r")}`, en:`the ratio ${M("s / r")}`}, same:true,
+   why:{ar:`هذه النسبة هي الزاوية نفسها بالراديان، فهي واحدة للجميع.`, en:`This ratio is the angle itself in radians, so it is the same for all.`}},
+  {t:{ar:"عدد الدورات التي يكملها الراكب", en:"the number of turns the rider completes"}, same:true,
+   why:{ar:"الراكبون يكملون الدورة معاً، لأن القرص يدور كجسم واحد.", en:"The riders complete each turn together, because the disc turns as one body."}}
+];
+
+const TASKS = [
+{ id:"t1", title:{ar:"لُفّ الخيوط حول الحافة", en:"Wrap strings round the rim"},
+  intro:{ar:"كل خيط طوله يساوي نصف القطر. ضع الخيوط على الحافة واحداً بعد آخر، ثم قدّر ما يلزم لإغلاق الدورة.", en:"Each string is as long as the radius. Lay the strings on the rim one by one, then estimate what closes the turn."},
+  build(host, done){ let n = done ? TAU : 0;
+    const b = box3(host, `<div class="mini" id="m1"></div><div class="pool"><button class="btn primary" id="t1btn"></button></div><div id="t1q"></div>`);
+    const draw = () => { const full = n >= TAU - 1e-6;
+      b.querySelector("#m1").innerHTML = stageHTML({radLine:1, strings:n, radEnd:1, wedge:n, wl: full ? "2π rad" : (n ? n + " rad" : ""),
+        board:[BL("خيوط على الحافة", "Strings on the rim", 28, CLR.gold), BX(full ? "2π ≈ 6.28" : String(n), 40, CLR.rad),
+               BX("θ = " + (full ? "2π rad = 360°" : n + " rad ≈ " + fmtDeg(degOf(n))), 24, CLR.angL)]}, "wide");
+      const btn = b.querySelector("#t1btn"); btn.textContent = T({ar:"ضع خيطاً على الحافة", en:"Lay a string on the rim"}); btn.disabled = n >= 6; };
+    const ask = () => { const q = b.querySelector("#t1q"); if (q.childElementCount) return;
+      q.insertAdjacentHTML("beforeend", `<p style="margin-top:8px"><b>${T({ar:"بقيت فجوة صغيرة. ما الذي يغلق الدورة تماماً؟", en:"A small gap is left. What closes the turn exactly?"})}</b></p>`);
+      const W = {0:{ar:"الفجوة أصغر بوضوح من نصف خيط: الدورة 6.28 rad، فالباقي بعد 6 خيوط نحو 0.28 فقط.", en:"The gap is clearly smaller than half a string: a turn is 6.28 rad, so after 6 strings only about 0.28 is left."},
+                 2:{ar:`خيط سابع يتجاوز نقطة البداية: ${M("7 rad ≈ 401°")} أكبر من ${M("360°")}.`, en:`A seventh string overshoots the start: ${M("7 rad ≈ 401°")} is more than ${M("360°")}.`},
+                 3:{ar:`ستة خيوط تغطي ${M("6 rad ≈ 344°")} فقط، والدورة ${M("360°")}، فالفجوة حقيقية.`, en:`Six strings cover only ${M("6 rad ≈ 344°")}; a turn is ${M("360°")}, so the gap is real.`}};
+      q.appendChild(chooser([{ar:"نحو نصف خيط", en:"about half a string"}, {ar:"نحو 0.28 من خيط", en:"about 0.28 of a string"}, {ar:"خيط سابع كامل", en:"a whole seventh string"}, {ar:"لا شيء: اكتملت الدورة", en:"nothing: the turn is complete"}], i => {
+        if (i === 1){ n = TAU; draw(); fb(host, "good", T({ar:`صحيح. الدورة تتّسع لـ${M("2π ≈ 6.28")} خيطاً، أي ${M("2π rad = 360°")}، ولذلك المحيط ${M("2πr")}.`, en:`Correct. A turn holds ${M("2π ≈ 6.28")} strings, so ${M("2π rad = 360°")}, which is why the circumference is ${M("2πr")}.`})); markDone("t1"); }
+        else fb(host, "bad", T(W[i])); })); };
+    b.querySelector("#t1btn").onclick = () => { if (n >= 6) return; n++; draw();
+      if (n < 6) fb(host, "hint", T({ar:`الخيط ${M(String(n))}: الزاوية ${M(n + " rad")}. واصل.`, en:`String ${M(String(n))}: the angle is ${M(n + " rad")}. Carry on.`}));
+      else { fb(host, "hint", T({ar:"ستة خيوط ولم تكتمل الدورة.", en:"Six strings, and the turn is not complete."})); ask(); } };
+    draw(); }},
+
+{ id:"t2", title:{ar:"من الدرجات إلى الراديان", en:"Degrees to radians"},
+  intro:{ar:"اقرأ الزاوية بالدرجات على القرص، واختر قيمتها بالراديان. الزوايا تُعرض واحدة بعد أخرى.", en:"Read the angle in degrees on the disc and pick its value in radians. Angles come one at a time."},
+  build(host, done){ let k = done ? DEG_TARGETS.length : 0;
+    const b = box3(host, `<div class="mini" id="m2"></div><div class="prog" id="p2"></div>`);
+    const draw = () => { const i = Math.min(k, DEG_TARGETS.length - 1), t = DEG_TARGETS[i], solved = k > i;
+      b.querySelector("#m2").innerHTML = stageHTML({deg:1, wedge:t.d * PI / 180, wl: solved ? t.a : "?",
+        board:[BL("حوّل إلى الراديان", "Convert to radians", 28, CLR.gold), BX(t.d + "°", 44, CLR.angL), BX("180° = π rad", 22, CLR.muted)]}, "wide");
+      b.querySelector("#p2").innerHTML = T({ar:"أنجزت ", en:"done "}) + `<b class="ltr">${k} / ${DEG_TARGETS.length}</b>`; };
+    b.appendChild(chooser(RAD_PIECES.map(p => p[0]), (j, d) => { if (k >= DEG_TARGETS.length) return; const t = DEG_TARGETS[k], [s, v] = RAD_PIECES[j];
+      if (s !== t.a) return fb(host, "bad", T({ar:`${M(s)} تساوي ${M(v + "°")}، والمطلوب ${M(t.d + "°")}. اضرب في ${M("π/180")}: ${M(t.d + "° × π/180 = " + t.a)}.`,
+                                               en:`${M(s)} is ${M(v + "°")}, but the angle is ${M(t.d + "°")}. Multiply by ${M("π/180")}: ${M(t.d + "° × π/180 = " + t.a)}.`}));
+      k++; draw();
+      if (k >= DEG_TARGETS.length){ fb(host, "good", T({ar:`أحسنت. كلها من مساواة واحدة: ${M("180° = π rad")}.`, en:`Well done. All from one equality: ${M("180° = π rad")}.`})); markDone("t2"); }
+      else fb(host, "hint", T({ar:"صحيح. الزاوية التالية:", en:"Correct. Next angle:"})); }));
+    draw(); }},
+
+{ id:"t3", title:{ar:"من الراديان إلى الدرجات", en:"Radians to degrees"},
+  intro:{ar:"الزاوية معطاة بالراديان. اختر قيمتها بالدرجات.", en:"The angle is given in radians. Pick its value in degrees."},
+  build(host, done){ let k = done ? RAD_TARGETS.length : 0;
+    const b = box3(host, `<div class="mini" id="m3"></div><div class="prog" id="p3"></div>`);
+    const draw = () => { const i = Math.min(k, RAD_TARGETS.length - 1), t = RAD_TARGETS[i], solved = k > i;
+      b.querySelector("#m3").innerHTML = stageHTML({deg: solved ? 1 : 0, wedge:t.a, wl:t.r,
+        board:[BL("حوّل إلى الدرجات", "Convert to degrees", 28, CLR.gold), BX(t.r, 44, CLR.angL), BX(solved ? "= " + t.deg : "π rad = 180°", 24, solved ? CLR.gold : CLR.muted)]}, "wide");
+      b.querySelector("#p3").innerHTML = T({ar:"أنجزت ", en:"done "}) + `<b class="ltr">${k} / ${RAD_TARGETS.length}</b>`; };
+    b.appendChild(chooser(DEG_PIECES.map(p => p[0]), j => { if (k >= RAD_TARGETS.length) return; const t = RAD_TARGETS[k], [s] = DEG_PIECES[j];
+      if (s !== t.deg){ const one = s === "1°" ? T({ar:" الراديان ليس درجة واحدة: هو أكبر منها بنحو 57 مرة.", en:" A radian is not one degree: it is about 57 times bigger."}) : "";
+        return fb(host, "bad", T({ar:`اضرب في ${M("180/π")}: ${M(t.r + " × 180/π = " + t.deg)}.`, en:`Multiply by ${M("180/π")}: ${M(t.r + " × 180/π = " + t.deg)}.`}) + one); }
+      k++; draw();
+      if (k >= RAD_TARGETS.length){ fb(host, "good", T({ar:`صحيح. لاحظ أن ${M("1 rad ≈ 57.3°")}، فالزاوية بالراديان عدد صغير مقارنة بالدرجات.`, en:`Correct. Note ${M("1 rad ≈ 57.3°")}: radian values are small numbers compared with degrees.`})); markDone("t3"); }
+      else fb(host, "hint", T({ar:"صحيح. التالية:", en:"Correct. Next:"})); }));
+    draw(); }},
+
+{ id:"t4", title:{ar:"قِس قوس كل راكب", en:"Measure each rider's arc"},
+  intro:{ar:`دار القرص ${M("θ = 0.5 rad")}. احسب طول القوس الذي قطعه كل راكب بدءاً من الداخلي. الراكب النشط محاط بحلقة ذهبية.`, en:`The disc turned ${M("θ = 0.5 rad")}. Find the arc each rider travelled, starting with the inner one. The active rider has a gold ring.`},
+  build(host, done){ let k = done ? 3 : 0;
+    const b = box3(host, `<div class="mini" id="m4"></div><div class="prog" id="p4"></div>`);
+    const draw = () => { b.querySelector("#m4").innerHTML = stageHTML({riders:1, rot:T4_TH, arcs:T4_TH, radRot:1, wedge:T4_TH, wl:"0.5 rad", arcLab:1,
+        arcShow:[k > 0, k > 1, k > 2], arcTxt:["s₁ = " + T4_ANS[0], "s₂ = " + T4_ANS[1], "s₃ = " + T4_ANS[2]], hlRider: k < 3 ? k : -1}, "arcs");
+      b.querySelector("#p4").innerHTML = k < 3 ? T({ar:`الراكب ${M(String(k + 1))}: ${M("r = " + (k + 1) + " m")} — ما طول قوسه؟`, en:`Rider ${M(String(k + 1))}: ${M("r = " + (k + 1) + " m")}. How long is its arc?`})
+                                               : T({ar:"قيست الأقواس الثلاثة.", en:"All three arcs measured."}); };
+    b.appendChild(chooser(T4_POOL, j => { if (k >= 3) return; const s = T4_POOL[j], want = T4_ANS[k], other = T4_ANS.indexOf(s), calc = M(`s = rθ = ${k + 1} × 0.5 = ${want}`);
+      if (s !== want){ let why;
+        if (other >= 0) why = {ar:`هذا قوس الراكب ${M(String(other + 1))}. الزاوية نفسها، لكن نصف القطر مختلف، فالقوس مختلف: ${calc}.`, en:`That is rider ${M(String(other + 1))}'s arc. Same angle, different radius, so a different arc: ${calc}.`};
+        else if (s === "0.17 m") why = {ar:`قسمت الزاوية على نصف القطر. القوس حاصل ضرب: ${calc}.`, en:`You divided the angle by the radius. The arc is a product: ${calc}.`};
+        else if (s === "6.0 m") why = {ar:`قسمت نصف القطر على الزاوية. القوس حاصل ضرب: ${calc}.`, en:`You divided the radius by the angle. The arc is a product: ${calc}.`};
+        else why = {ar:`القوس أقصر من نصف القطر هنا لأن الزاوية أقلّ من راديان: ${calc}.`, en:`The arc is shorter than the radius here because the angle is under one radian: ${calc}.`};
+        return fb(host, "bad", T(why)); }
+      k++; draw();
+      if (k >= 3){ fb(host, "good", T({ar:`الأقواس ${M("0.5")} و${M("1.0")} و${M("1.5 m")}: تتضاعف مع نصف القطر، والزاوية ${M("0.5 rad")} واحدة للثلاثة.`, en:`The arcs are ${M("0.5")}, ${M("1.0")} and ${M("1.5 m")}: they scale with the radius, while the angle ${M("0.5 rad")} is the same for all three.`})); markDone("t4"); }
+      else fb(host, "hint", T({ar:"صحيح. الراكب التالي.", en:"Correct. Next rider."})); }));
+    draw(); }},
+
+{ id:"t5", title:{ar:"من القياس إلى الزاوية", en:"From a measurement to an angle"},
+  intro:{ar:`شريط قياس على الحافة (${M("r = 3 m")}) يقرأ قوساً طوله ${M("4.5 m")}. أوجد الزاوية بالراديان، ثم بالدرجات.`, en:`A tape on the rim (${M("r = 3 m")}) reads an arc of ${M("4.5 m")}. Find the angle in radians, then in degrees.`},
+  build(host, done){ let st = done ? 2 : 0;
+    const b = box3(host, `<div class="mini" id="m5"></div><div id="q5"></div>`);
+    const draw = () => { b.querySelector("#m5").innerHTML = stageHTML({radLine:1, arcs:1.5, arcShow:[0,0,1], arcLab:1, arcTxt:[null, null, "s = 4.5 m"], wedge: st ? 1.5 : 0, wl: st ? "1.5 rad" : "",
+        board:[BL("قياس على الحافة", "A measurement on the rim", 28, CLR.gold), BX("r = 3 m · s = 4.5 m", 26, CLR.radL),
+               BX(st ? "θ = 1.5 rad" : "θ = ?", 32, CLR.angL), BX(st > 1 ? "≈ 86°" : " ", 28, CLR.gold)]}, "wide");
+      const q = b.querySelector("#q5"); q.innerHTML = "";
+      if (st === 0){ q.insertAdjacentHTML("beforeend", `<p><b>${T({ar:"ما الزاوية بالراديان؟", en:"What is the angle in radians?"})}</b></p>`);
+        const W = {0:{ar:`ضربت القوس في نصف القطر. الزاوية قسمة: ${M("θ = s / r = 4.5 / 3 = 1.5 rad")}.`, en:`You multiplied arc by radius. The angle is a quotient: ${M("θ = s / r = 4.5 / 3 = 1.5 rad")}.`},
+                   2:{ar:`قسمت نصف القطر على القوس، والصواب العكس: ${M("θ = s / r = 1.5 rad")}.`, en:`You divided radius by arc; it is the other way round: ${M("θ = s / r = 1.5 rad")}.`},
+                   3:{ar:`طول القوس ليس الزاوية. القوس بالمتر، والزاوية نسبته إلى نصف القطر: ${M("4.5 / 3 = 1.5 rad")}.`, en:`The arc length is not the angle. The arc is in metres; the angle is its ratio to the radius: ${M("4.5 / 3 = 1.5 rad")}.`}};
+        q.appendChild(chooser(["13.5 rad", "1.5 rad", "0.67 rad", "4.5 rad"], i => {
+          if (i === 1){ st = 1; draw(); fb(host, "hint", T({ar:`صحيح: ${M("θ = 4.5 / 3 = 1.5 rad")}. والآن بالدرجات.`, en:`Correct: ${M("θ = 4.5 / 3 = 1.5 rad")}. Now in degrees.`})); }
+          else fb(host, "bad", T(W[i])); })); }
+      else if (st === 1){ q.insertAdjacentHTML("beforeend", `<p><b>${T({ar:"كم تساوي بالدرجات تقريباً؟", en:"About how many degrees is that?"})}</b></p>`);
+        const W = {0:{ar:`الراديان ليس درجة: ${M("1.5 × 57.3° ≈ 86°")}.`, en:`A radian is not a degree: ${M("1.5 × 57.3° ≈ 86°")}.`},
+                   1:{ar:`هذه قيمة راديان واحد فقط، وهنا ${M("1.5 rad")}: ${M("1.5 × 57.3° ≈ 86°")}.`, en:`That is one radian only; here it is ${M("1.5 rad")}: ${M("1.5 × 57.3° ≈ 86°")}.`},
+                   3:{ar:`${M("270° = 3π/2 ≈ 4.71 rad")}، أكبر بكثير من ${M("1.5 rad")}.`, en:`${M("270° = 3π/2 ≈ 4.71 rad")}, far more than ${M("1.5 rad")}.`}};
+        q.appendChild(chooser(["1.5°", "57.3°", "86°", "270°"], i => {
+          if (i === 2){ st = 2; draw(); fb(host, "good", T({ar:`صحيح: ${M("1.5 × 180/π ≈ 86°")}، أي أقلّ قليلاً من ربع دورة.`, en:`Correct: ${M("1.5 × 180/π ≈ 86°")}, a little under a quarter turn.`})); markDone("t5"); }
+          else fb(host, "bad", T(W[i])); })); } };
+    draw(); }},
+
+{ id:"t6", title:{ar:"ما الذي يختلف بين الراكبين؟", en:"What differs between the riders?"},
+  intro:{ar:"دار القرص فدار الراكبون الثلاثة معاً. صنّف كل كمّية: هل تختلف من راكب إلى آخر، أم هي واحدة للجميع؟", en:"The disc turned and the three riders turned with it. Classify each quantity: does it differ between riders, or is it the same for all?"},
+  build(host, done){ let k = done ? T6_ITEMS.length : 0;
+    const b = box3(host, `<div class="mini">${stageHTML(Object.assign({wedge:R3, wl:"π/3", arcLab:1}, HOOK), "arcs")}</div><div id="it6"></div><div class="prog" id="p6"></div>`);
+    const draw = () => { b.querySelector("#it6").innerHTML = k < T6_ITEMS.length ? big(T(T6_ITEMS[k].t)) : big(T({ar:"صُنّفت الكمّيات الخمس.", en:"All five quantities classified."}));
+      b.querySelector("#p6").innerHTML = `<b class="ltr">${k} / ${T6_ITEMS.length}</b>`; };
+    b.appendChild(chooser([{ar:"تختلف من راكب إلى آخر", en:"differs between riders"}, {ar:"واحدة لكل الراكبين", en:"the same for all riders"}], i => {
+      if (k >= T6_ITEMS.length) return; const it = T6_ITEMS[k];
+      if ((i === 1) !== it.same) return fb(host, "bad", T(it.why));
+      k++; draw();
+      if (k >= T6_ITEMS.length){ fb(host, "good", T({ar:"ما يتعلّق بالمسافة (نصف القطر والقوس) يختلف، وما يتعلّق بالدوران (الزاوية والنسبة وعدد الدورات) واحد. لهذا نصف الدوران بالزاوية.", en:"What concerns distance (radius, arc) differs; what concerns rotation (angle, ratio, turns) is shared. That is why rotation is described by angle."})); markDone("t6"); }
+      else fb(host, "hint", T({ar:"صحيح. ", en:"Correct. "}) + T(it.why)); }));
+    draw(); }}
+];
+
+/* حلّ آلي للمهام — يستعمله verify.js. openTask هي المهمة المعروضة */
+const openTask = () => document.querySelector("#doWrap .task");
+const pickText = (sel, txt) => { const p = [...openTask().querySelectorAll(sel + " .piece")].find(e => e.textContent.trim() === txt); p.click(); };
+const DEMO_SOLVE = [
+  async () => { for (let i = 0; i < 6; i++) openTask().querySelector("#t1btn").click(); openTask().querySelector('#t1q .piece[data-i="1"]').click(); },
+  async () => { for (const t of DEG_TARGETS) pickText(".pool", t.a); },
+  async () => { for (const t of RAD_TARGETS) pickText(".pool", t.deg); },
+  async () => { for (const a of T4_ANS) pickText(".pool", a); },
+  async () => { pickText("#q5", "1.5 rad"); pickText("#q5", "86°"); },
+  async () => { for (const it of T6_ITEMS) openTask().querySelectorAll(".pool .piece")[it.same ? 1 : 0].click(); }
+];
+
+/* ═══════════════════════════════════════════════════════════════
+   4 · افهم — الملخص العلمي والمفاهيم والمصطلحات
+   ═══════════════════════════════════════════════════════════════ */
+const CONV_ROWS = [[30,"π/6"], [45,"π/4"], [57.3,"1"], [60,"π/3"], [90,"π/2"], [180,"π"], [270,"3π/2"], [360,"2π"]];
+const convTable = () => tableHTML({ head:[{ar:"بالدرجات", en:"Degrees"}, {ar:"بالراديان", en:"Radians"}, {ar:"عشرياً", en:"Decimal"}, {ar:"جزء من الدورة", en:"Fraction of a turn"}],
+  rows: CONV_ROWS.map(([d, r]) => { const rad = d * PI / 180;
+    return [M(d + "°"), M(r + " rad"), M(rad.toFixed(2) + " rad"), M(d === 57.3 ? "≈ 0.16" : (d / 360 === 1 ? "1" : (d / 360).toFixed(3).replace(/0+$/,"")))]; }) });
+const FIGW = svg => `<div style="max-width:720px;margin:0 auto">${svg}</div>`;
+const READ = {
+  bigIdea:{ar:"الدوران يُوصف بالزاوية لا بالمسافة، لأن الزاوية واحدة لكل نقاط الجسم الدوّار.", en:"Rotation is described by angle, not distance, because the angle is the same for every point of a rotating body."},
+  mainIdea:{ar:`الراديان هو الزاوية المركزية التي تقابل قوساً طوله يساوي نصف القطر، وتُحسب أي زاوية بالراديان من ${M("θ = s / r")}.`,
+            en:`A radian is the central angle facing an arc as long as the radius, and any angle in radians is ${M("θ = s / r")}.`},
+  eqs:[{ar:"لماذا لا تصلح المسافة لقياس الدوران؟", en:"Why can distance not measure rotation?"},
+       {ar:"ما الراديان، ولماذا تحتوي الدورة 2π منه؟", en:"What is a radian, and why does a turn contain 2π of them?"},
+       {ar:"كيف نربط الزاوية بطول القوس ونصف القطر؟", en:"How are angle, arc length and radius linked?"}],
+  blocks:[
+    {h:{ar:"1 · لماذا لا تصلح المسافة؟", en:"1 · Why not distance?"},
+     p:[{ar:"حين يدور قرص صلب حول محور ثابت، تقطع نقاطه مسافات مختلفة: القريبة من المحور تقطع قوساً قصيراً، والبعيدة قوساً طويلاً. لكن النقاط كلها تدور الدوران نفسه. لذلك نحتاج مقداراً لا يعتمد على موضع النقطة، وهو الزاوية التي يمسحها نصف القطر المارّ بها.",
+         en:"When a rigid disc turns about a fixed axis, its points travel different distances: points near the axis travel short arcs, points far from it long arcs. Yet all of them turn by the same amount. So we need a quantity that does not depend on where the point is: the angle swept by the radius through it."}],
+     fig:() => FIGW(stageHTML(Object.assign({wedge:PI/3, wl:"π/3", arcLab:1}, HOOK), "arcs"))},
+    {h:{ar:"2 · الراديان: قوس بطول نصف القطر", en:"2 · The radian: an arc as long as the radius"},
+     p:[{ar:`خذ خيطاً طوله يساوي نصف قطر الدائرة، ولفّه على محيطها. الزاوية المركزية المقابلة له هي <b>راديان واحد</b> ${M("(1 rad)")}، وتساوي نحو ${M("57.3°")}. التعريف لا يعتمد على حجم الدائرة: القوس الذي يساوي نصف القطر يقابل الزاوية نفسها في أي دائرة.`,
+         en:`Take a string as long as the circle's radius and lay it along the circumference. The central angle it faces is <b>one radian</b> ${M("(1 rad)")}, about ${M("57.3°")}. The definition does not depend on the circle's size: an arc equal to the radius faces the same angle in any circle.`}],
+     fig:() => FIGW(stageHTML({radLine:1, strings:1, sEqR:1, radEnd:1, wedge:1, wl:"1 rad"}, "rim"))},
+    {h:{ar:"3 · كم راديان في الدورة؟", en:"3 · How many radians in a turn?"},
+     p:[{ar:`محيط الدائرة ${M("2πr")}، فهو يتّسع لـ${M("2π ≈ 6.28")} من أنصاف الأقطار. إذن الدورة الكاملة ${M("2π rad = 360°")}، ونصف الدورة ${M("π rad = 180°")}. الجدول يعرض زوايا شائعة.`,
+         en:`The circumference is ${M("2πr")}, so it holds ${M("2π ≈ 6.28")} radii. A full turn is therefore ${M("2π rad = 360°")}, and half a turn ${M("π rad = 180°")}. The table lists common angles.`}],
+     fig:convTable},
+    {h:{ar:`4 · العلاقة ${M("θ = s / r")}`, en:`4 · The relation ${M("θ = s / r")}`},
+     p:[{ar:`لأي قوس طوله ${M("s")} على دائرة نصف قطرها ${M("r")}: ${M("θ = s / r")}، حيث ${M("s")} و${M("r")} بوحدة الطول نفسها. والصيغة المعكوسة ${M("s = rθ")} تعطي طول القوس بشرط أن تكون ${M("θ")} بالراديان. عند ثبات الزاوية، يتناسب القوس طردياً مع نصف القطر.`,
+         en:`For any arc of length ${M("s")} on a circle of radius ${M("r")}: ${M("θ = s / r")}, with ${M("s")} and ${M("r")} in the same length unit. The inverse form ${M("s = rθ")} gives the arc length, provided ${M("θ")} is in radians. For a fixed angle, the arc is proportional to the radius.`},
+        {ar:"الجدول يقارن الكمّيات الثلاث ويجيب عن السؤال الأهم: ماذا يحدث لو غابت؟", en:"The table compares the three quantities and answers the key question: what if one were missing?"}], table:"roles"},
+    {h:{ar:"5 · التحويل بين الدرجات والراديان", en:"5 · Converting degrees and radians"},
+     p:[{ar:`المفتاح مساواة واحدة: ${M("180° = π rad")}. من الدرجات إلى الراديان اضرب في ${M("π/180")}، ومن الراديان إلى الدرجات اضرب في ${M("180/π")}. مثال: ${M("60° × π/180 = π/3 rad")}، و${M("2 rad × 180/π ≈ 114.6°")}.`,
+         en:`The key is one equality: ${M("180° = π rad")}. Degrees to radians: multiply by ${M("π/180")}. Radians to degrees: multiply by ${M("180/π")}. Example: ${M("60° × π/180 = π/3 rad")}, and ${M("2 rad × 180/π ≈ 114.6°")}.`}]},
+    {h:{ar:"6 · لماذا الراديان بلا وحدة؟", en:"6 · Why is the radian unitless?"},
+     p:[{ar:`${M("θ = s / r")} قسمة طول على طول، فتختصر الوحدتان ويبقى عدد مجرّد. نكتب ${M("rad")} لنتذكّر أن العدد زاوية، ونسقطه أثناء الحساب. لهذا تعطي ${M("s = rθ")} الناتج بالمتر مباشرة: ${M("3 m × 0.5 = 1.5 m")}.`,
+         en:`${M("θ = s / r")} divides a length by a length, so the units cancel and a pure number remains. We write ${M("rad")} as a reminder that it is an angle, and drop it while calculating. That is why ${M("s = rθ")} gives metres directly: ${M("3 m × 0.5 = 1.5 m")}.`}]},
+    {h:{ar:"7 · أخطاء شائعة", en:"7 · Common mistakes"},
+     p:[{ar:"<b>«النقطة الأبعد عن المحور دارت زاوية أكبر».</b> لا: قطعت قوساً أطول، لكن الزاوية واحدة لكل نقاط الجسم.", en:"<b>“The point farther from the axis turned through a bigger angle.”</b> No: it travelled a longer arc, but the angle is the same for every point of the body."},
+        {ar:"<b>«الدائرة الكبيرة فيها راديانات أكثر».</b> لا: كل دائرة فيها 2π rad، لأن محيطها ونصف قطرها يكبران معاً.", en:"<b>“A bigger circle has more radians.”</b> No: every circle has 2π rad, because its circumference and radius grow together."},
+        {ar:`<b>استعمال الدرجات في ${M("s = rθ")}.</b> قرص ${M("r = 3 m")} دار ${M("60°")}: بالدرجات يخرج ${M("180 m")}، وهذا مستحيل. بالراديان: ${M("3 × π/3 ≈ 3.14 m")}.`, en:`<b>Using degrees in ${M("s = rθ")}.</b> A disc with ${M("r = 3 m")} turns ${M("60°")}: degrees give ${M("180 m")}, which is impossible. In radians: ${M("3 × π/3 ≈ 3.14 m")}.`}]}
+  ],
+  rolesTable:{ head:[{ar:"الكمّية", en:"Quantity"}, {ar:"الرمز والوحدة", en:"Symbol and unit"}, {ar:"دورها", en:"Its role"}, {ar:"لو غابت", en:"If missing"}],
+    rows:[[{ar:"نصف القطر", en:"radius"}, M("r · m"), {ar:"المسطرة التي يُقاس بها القوس", en:"the ruler the arc is measured with"}, {ar:"لا يُعرَّف الراديان، فلا نعرف «طول الخيط»", en:"the radian cannot be defined: there is no “string length”"}],
+          [{ar:"طول القوس", en:"arc length"}, M("s · m"), {ar:"المسافة التي تقطعها النقطة على مسارها الدائري", en:"the distance a point travels along its circle"}, {ar:"لا نعرف كم تحرّكت النقطة فعلاً", en:"we do not know how far the point actually moved"}],
+          [{ar:"الزاوية", en:"angle"}, M("θ · rad"), {ar:"مقدار الدوران، واحد لكل نقاط الجسم", en:"how much the body turned, the same for every point"}, {ar:"نضطرّ إلى وصف الدوران بمسافة تختلف من نقطة إلى أخرى", en:"rotation must be described by a distance that differs from point to point"}]] },
+  gloss:[{ar:"الراديان", en:"radian", d:{ar:"الزاوية المركزية التي تقابل قوساً طوله يساوي نصف القطر؛ نحو 57.3°.", en:"the central angle facing an arc equal to the radius; about 57.3°."}},
+         {ar:"الزاوية المركزية", en:"central angle", d:{ar:"زاوية رأسها مركز الدائرة وضلعاها نصفا قطرين.", en:"an angle with its vertex at the centre and two radii as sides."}},
+         {ar:"طول القوس", en:"arc length", d:{ar:"المسافة على محيط الدائرة بين نقطتين.", en:"the distance along the circumference between two points."}},
+         {ar:"نصف القطر", en:"radius", d:{ar:"المسافة من المركز إلى أي نقطة على الدائرة.", en:"the distance from the centre to any point on the circle."}},
+         {ar:"محور الدوران", en:"axis of rotation", d:{ar:"الخط الثابت الذي يدور الجسم حوله.", en:"the fixed line a body turns about."}},
+         {ar:"خط الإسناد", en:"reference line", d:{ar:"خط ثابت تُقاس منه الزوايا؛ الزاوية الموجبة عكس اتجاه عقارب الساعة.", en:"a fixed line angles are measured from; positive angles are counterclockwise."}},
+         {ar:"الدورة", en:"revolution", d:{ar:"دوران كامل يساوي 360° أو 2π rad.", en:"one full turn: 360° or 2π rad."}},
+         {ar:"الدرجة", en:"degree", d:{ar:"جزء من 360 جزءاً من الدورة.", en:"one 360th of a turn."}}]
+};
+
+/* ═══════════════════════════════════════════════════════════════
+   5 · اختبر — أسئلة موضوعية وتفاعلية بمهارات
+   ═══════════════════════════════════════════════════════════════ */
+const SK = { s1:{ar:"مفهوم الراديان", en:"The radian"}, s2:{ar:"العلاقة θ = s / r", en:"The relation θ = s / r"}, s3:{ar:"التحويل بين الدرجات والراديان", en:"Converting degrees and radians"} };
+const QUIZ = [
+ {sk:"s1", type:"mcq", stem:{ar:"ما تعريف الراديان الواحد؟", en:"What is one radian?"},
+  opts:[{ar:"زاوية مركزية تقابل قوساً طوله 1 m", en:"a central angle facing an arc 1 m long"}, {ar:"زاوية مركزية تقابل قوساً طوله يساوي نصف القطر", en:"a central angle facing an arc as long as the radius"},
+        {ar:"جزء من 360 جزءاً من الدورة", en:"one 360th of a turn"}, {ar:"زاوية مركزية تقابل قوساً طوله يساوي القطر", en:"a central angle facing an arc as long as the diameter"}], ans:1,
+  ok:{ar:"الراديان يقيس القوس بمسطرة نصف القطر نفسها، فلا يعتمد على حجم الدائرة.", en:"The radian measures the arc with the radius itself as the ruler, so it does not depend on the circle's size."},
+  bad:{ar:"تذكّر الخيط: طوله يساوي نصف القطر تماماً.", en:"Remember the string: exactly as long as the radius."},
+  w:{0:{ar:"لو كان القوس 1 m لتغيّرت الزاوية مع حجم الدائرة؛ الراديان مرتبط بنصف القطر لا بالمتر.", en:"A 1 m arc would give different angles in different circles; the radian is tied to the radius, not the metre."},
+     2:{ar:"هذا تعريف الدرجة. الراديان أكبر منها بنحو 57 مرة.", en:"That is a degree. A radian is about 57 times bigger."},
+     3:{ar:"قوس بطول القطر يقابل زاوية 2 rad، لا راديان واحداً.", en:"An arc as long as the diameter faces 2 rad, not one radian."}},
+  nudge:{ar:"ربط الراديان بنصف القطر.", en:"Linking the radian to the radius."}},
+ {sk:"s1", type:"tf", stem:{ar:"عدد الراديانات في الدورة الكاملة يزداد كلما كبرت الدائرة.", en:"The number of radians in a full turn grows as the circle gets bigger."}, ans:false,
+  ok:{ar:"كل دائرة فيها 2π rad، لأن المحيط ونصف القطر يكبران معاً.", en:"Every circle has 2π rad, because circumference and radius grow together."},
+  bad:{ar:"المحيط 2πr ونصف القطر r: نسبتهما 2π دائماً، مهما كان حجم الدائرة.", en:"The circumference is 2πr and the radius r: their ratio is always 2π, whatever the size."},
+  nudge:{ar:"استقلال الراديان عن الحجم.", en:"The radian's independence of size."}},
+ {sk:"s3", type:"mcq", stem:{ar:"ربع دورة يساوي:", en:"A quarter turn equals:"},
+  opts:["π rad", "π/2 rad", "π/4 rad", "2π rad"], ans:1,
+  ok:{ar:`${M("360° / 4 = 90°")}، و${M("90° × π/180 = π/2 rad")}.`, en:`${M("360° / 4 = 90°")}, and ${M("90° × π/180 = π/2 rad")}.`},
+  bad:{ar:`الدورة ${M("2π")}، فربعها ${M("2π / 4 = π/2")}.`, en:`A turn is ${M("2π")}, so a quarter is ${M("2π / 4 = π/2")}.`},
+  w:{0:{ar:"π rad نصف دورة لا ربعها.", en:"π rad is half a turn, not a quarter."}, 2:{ar:"π/4 ثُمن دورة، أي 45°.", en:"π/4 is an eighth of a turn, 45°."}, 3:{ar:"2π rad دورة كاملة.", en:"2π rad is a full turn."}},
+  nudge:{ar:"التحويل عبر 180° = π.", en:"Converting through 180° = π."}},
+ {sk:"s2", type:"mcq", stem:{ar:`قرص نصف قطره ${M("0.5 m")} دار ${M("4 rad")}. ما طول القوس الذي قطعته نقطة على حافته؟`, en:`A disc of radius ${M("0.5 m")} turns ${M("4 rad")}. How far does a point on its rim travel?`},
+  opts:["2 m", "8 m", "0.125 m", "4.5 m"], ans:0,
+  ok:{ar:`${M("s = rθ = 0.5 × 4 = 2 m")}.`, en:`${M("s = rθ = 0.5 × 4 = 2 m")}.`},
+  bad:{ar:`القوس حاصل ضرب نصف القطر في الزاوية بالراديان: ${M("s = rθ")}.`, en:`The arc is the radius times the angle in radians: ${M("s = rθ")}.`},
+  w:{1:{ar:"قسمت الزاوية على نصف القطر بدل ضربها فيه.", en:"You divided the angle by the radius instead of multiplying."}, 2:{ar:"قسمت نصف القطر على الزاوية؛ القوس حاصل ضرب.", en:"You divided radius by angle; the arc is a product."}, 3:{ar:"جمعت الكمّيتين؛ العلاقة ضرب لا جمع.", en:"You added them; the relation is a product, not a sum."}},
+  nudge:{ar:"استعمال s = rθ.", en:"Using s = rθ."}},
+ {sk:"s2", type:"multi", stem:{ar:`قرص يدور ${M("1.2 rad")} وعليه ثلاث نقاط على بُعد 1 و2 و3 m من المحور. أيّ العبارات صحيحة؟ (أكثر من إجابة)`, en:`A disc turns ${M("1.2 rad")} with three points 1, 2 and 3 m from the axis. Which statements are true? (more than one)`},
+  opts:[{ar:"الزاوية واحدة للنقاط الثلاث", en:"the angle is the same for all three points"}, {ar:"قوس النقطة الخارجية ثلاثة أضعاف قوس الداخلية", en:"the outer point's arc is three times the inner one's"},
+        {ar:`النسبة ${M("s / r")} للنقاط الثلاث ${M("1.2")}`, en:`the ratio ${M("s / r")} is ${M("1.2")} for all three`}, {ar:"النقطة الخارجية دارت زاوية أكبر", en:"the outer point turned through a bigger angle"},
+        {ar:`قوس النقطة الوسطى ${M("1.2 m")}`, en:`the middle point's arc is ${M("1.2 m")}`}], ans:[0,1,2],
+  ok:{ar:`الزاوية والنسبة ${M("s / r")} مشتركتان، والقوس يتناسب مع نصف القطر.`, en:`The angle and the ratio ${M("s / r")} are shared; the arc scales with the radius.`},
+  bad:{ar:`النقطة الخارجية قطعت قوساً أطول لا زاوية أكبر، وقوس النقطة الوسطى ${M("2 × 1.2 = 2.4 m")}.`, en:`The outer point travelled a longer arc, not a bigger angle, and the middle point's arc is ${M("2 × 1.2 = 2.4 m")}.`},
+  nudge:{ar:"التمييز بين القوس والزاوية.", en:"Telling arc from angle."}},
+ {sk:"s3", type:"match", stem:{ar:"طابق كل زاوية بالدرجات بقيمتها بالراديان.", en:"Match each angle in degrees to its value in radians."},
+  pairs:[["360°", "2π rad"], ["180°", "π rad"], ["60°", "π/3 rad"], ["45°", "π/4 rad"]],
+  ok:{ar:"كلها من 180° = π: اقسم الدرجات على 180 واضرب في π.", en:"All from 180° = π: divide the degrees by 180 and multiply by π."},
+  bad:{ar:"ابدأ من 180° = π، ثم اقسم: 60° ثلث 180°، و45° ربعها.", en:"Start from 180° = π, then divide: 60° is a third of 180°, 45° a quarter."},
+  nudge:{ar:"التحويل بالتناسب.", en:"Converting by proportion."}},
+ {sk:"s1", type:"odd", stem:{ar:"أيّها دخيل على المجموعة؟", en:"Which one does not belong?"},
+  opts:[{ar:"الدرجة", en:"degree"}, {ar:"الراديان", en:"radian"}, {ar:"الدورة", en:"revolution"}, {ar:"المتر", en:"metre"}], ans:3,
+  ok:{ar:"الثلاثة الأولى وحدات لقياس الزاوية، والمتر وحدة طول.", en:"The first three measure angle; the metre measures length."},
+  bad:{ar:"ابحث عمّا تقيسه كل وحدة: ثلاث منها تقيس مقدار الدوران.", en:"Ask what each unit measures: three of them measure rotation."},
+  w:{0:{ar:"الدرجة تقيس الزاوية كالراديان والدورة.", en:"The degree measures angle, like the radian and the revolution."}, 1:{ar:"الراديان وحدة زاوية.", en:"The radian is an angle unit."}, 2:{ar:"الدورة وحدة زاوية تساوي 2π rad.", en:"The revolution is an angle unit equal to 2π rad."}},
+  nudge:{ar:"التصنيف حسب الكمّية المقيسة.", en:"Classifying by the quantity measured."}},
+ {sk:"s3", type:"mcq", stem:{ar:`الزاوية ${M("2.5 rad")} تساوي بالدرجات تقريباً:`, en:`The angle ${M("2.5 rad")} is about:`},
+  opts:["2.5°", "143°", "450°", "286°"], ans:1,
+  ok:{ar:`${M("2.5 × 180/π ≈ 2.5 × 57.3 ≈ 143°")}.`, en:`${M("2.5 × 180/π ≈ 2.5 × 57.3 ≈ 143°")}.`},
+  bad:{ar:`اضرب في ${M("180/π ≈ 57.3")}.`, en:`Multiply by ${M("180/π ≈ 57.3")}.`},
+  w:{0:{ar:"الراديان ليس درجة؛ كل راديان نحو 57.3°.", en:"A radian is not a degree; each radian is about 57.3°."}, 2:{ar:"ضربت في 180 دون القسمة على π.", en:"You multiplied by 180 without dividing by π."}, 3:{ar:"286° ضعف الجواب: ربما ضربت في 2 زائدة.", en:"286° is double the answer: an extra factor of 2."}},
+  nudge:{ar:"التحويل من الراديان إلى الدرجات.", en:"Converting radians to degrees."}},
+ {sk:"s2", type:"tf", stem:{ar:"إذا ضاعفنا نصف القطر مع بقاء طول القوس ثابتاً، تتضاعف الزاوية.", en:"If the radius doubles while the arc length stays fixed, the angle doubles."}, ans:false,
+  ok:{ar:`${M("θ = s / r")}: نصف القطر في المقام، فمضاعفته تُنصّف الزاوية.`, en:`${M("θ = s / r")}: the radius is in the denominator, so doubling it halves the angle.`},
+  bad:{ar:`انظر أين يقع ${M("r")} في ${M("θ = s / r")}: في المقام.`, en:`Look where ${M("r")} sits in ${M("θ = s / r")}: in the denominator.`},
+  nudge:{ar:"قراءة العلاقة: طردية أم عكسية؟", en:"Reading the relation: direct or inverse?"}},
+ {sk:"s2", type:"mcq", stem:{ar:"لماذا يُكتب الراديان أحياناً دون وحدة في الحسابات؟", en:"Why is the radian often dropped in calculations?"},
+  opts:[{ar:"لأنه نسبة بين طولين فتختصر وحدتاهما", en:"because it is a ratio of two lengths, so their units cancel"}, {ar:"لأنه وحدة صغيرة جداً", en:"because it is a very small unit"},
+        {ar:"لأنه يساوي الدرجة", en:"because it equals a degree"}, {ar:"لأن الزاوية ليست كمّية فيزيائية", en:"because angle is not a physical quantity"}], ans:0,
+  ok:{ar:`${M("θ = s / r")} متر على متر، فيبقى عدد مجرّد.`, en:`${M("θ = s / r")} is metres over metres, leaving a pure number.`},
+  bad:{ar:"ارجع إلى التعريف: الراديان قوس مقسوم على نصف قطر.", en:"Go back to the definition: an arc divided by a radius."},
+  w:{1:{ar:"الراديان أكبر من الدرجة بنحو 57 مرة، وحجمه لا علاقة له باختصار الوحدة.", en:"A radian is about 57 times a degree, and its size has nothing to do with the unit cancelling."}, 2:{ar:"1 rad ≈ 57.3°، لا درجة واحدة.", en:"1 rad ≈ 57.3°, not one degree."}, 3:{ar:"الزاوية كمّية فيزيائية تصف مقدار الدوران، لكنها بلا أبعاد.", en:"Angle is a physical quantity describing rotation; it is just dimensionless."}},
+  nudge:{ar:"فهم الراديان كنسبة.", en:"Seeing the radian as a ratio."}}
+];
+
+/* ═══════════════════════════════════════════════════════════════
+   6 · المحرّك — لا يُعدَّل إلا عند تغيير نصوص الواجهة
+   ═══════════════════════════════════════════════════════════════ */
+const UI = {
+  title:{ar:"الراديان وطول القوس", en:"The radian and arc length"},
+  sub:{ar:"منصّة وصف الحركة الدورانية · القسم 1 · قياس الدوران", en:"Describing Rotational Motion Platform · Section 1 · Measuring rotation"},
+  stages:[ {k:"read",  ic:"📘", t:{ar:"المحتوى العلمي", en:"Scientific content"}}, {k:"watch", ic:"▶", t:{ar:"المحاكاة التفاعلية", en:"Interactive simulation"}},
+           {k:"do",    ic:"✋", t:{ar:"نفّذ وابنِ", en:"Do and build"}},           {k:"test",  ic:"✓", t:{ar:"اختبر نفسك", en:"Test yourself"}} ],
+  reset:{ar:"إعادة", en:"Reset"}, prev:{ar:"◀ السابق", en:"◀ Previous"}, next:{ar:"التالي ▶", en:"Next ▶"},
+  play:{ar:"تشغيل", en:"Play"}, pause:{ar:"إيقاف", en:"Pause"}, speed:{ar:"السرعة", en:"Speed"},
+  journey:{ar:"من خيطٍ بطول نصف القطر إلى الراديان", en:"From a radius-long string to the radian"},
+  bigIdea:{ar:"الفكرة الكبرى", en:"Big Idea"}, mainIdea:{ar:"الفكرة الرئيسة", en:"Main Idea"}, eq:{ar:"الأسئلة الجوهرية", en:"Essential Questions"},
+  gloss:{ar:"المصطلحات", en:"Terminology"}, score:{ar:"نتيجتك", en:"Your score"}, answered:{ar:"أُجيب", en:"answered"},
+  bySkill:{ar:"الأداء حسب المهارة", en:"Performance by skill"}, skill:{ar:"المهارة", en:"Skill"}, check:{ar:"تحقّق", en:"Check"},
+  tru:{ar:"صحيح", en:"True"}, fls:{ar:"خطأ", en:"False"}, correctIs:{ar:"الصواب", en:"The correct answer"}, train:{ar:"المهارة التي تدرّبها", en:"The skill you are training"},
+  done:{ar:"مُنجَز", en:"done"}, tPrev:{ar:"◀ المهمة السابقة", en:"◀ Previous task"}, tNext:{ar:"المهمة التالية ▶", en:"Next task ▶"},
+  tCount:{ar:"أنجزت {d} من {n} مهام — التنقّل بينها حرّ، والأرقام ترتيب مقترح", en:"{d} of {n} tasks done — move freely; the numbers are a suggested order"},
+  foot:{ar:"منصّة وصف الحركة الدورانية · القسم 1 من 5", en:"Describing Rotational Motion Platform · Section 1 of 5"}
+};
+let STAGE = "read", STEP = 0, PLAYING = null, SPEED = 1, TASK_I = 0;
+const BASE_MS = 5200, stepMs = () => Math.max(700, Math.round(BASE_MS / SPEED));
+const KEY = "rot.s1.radian.v1";
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify({do:DONE.do, quiz:DONE.quiz, sp:SPEED})); }catch(e){} }
+function load(){ try{ const r = localStorage.getItem(KEY); if (r){ const o = JSON.parse(r); DONE.do = o.do || {}; DONE.quiz = o.quiz || {};
+  if (o.sp && [0.5,0.75,1,1.5,2,3].indexOf(+o.sp) >= 0) SPEED = +o.sp; } }catch(e){} }
+
+function renderNav(){
+  $("#stageNav").innerHTML = UI.stages.map(s => `<button data-k="${s.k}" class="${STAGE===s.k?'active':''}"><span class="dot"></span><span class="ic">${s.ic}</span><span class="t">${T(s.t)}</span></button>`).join("");
+  $$("#stageNav button").forEach(b => b.onclick = () => { STAGE = b.dataset.k; stopPlay(); renderAll(); window.scrollTo({top:0, behavior:"smooth"}); });
+  refreshDots(); }
+function refreshDots(){ const map = {watch: STEP >= STEPS.length-1, do: TASKS.every(t => DONE.do[t.id]), read: false, test: Object.keys(DONE.quiz).length >= QUIZ.length};
+  $$("#stageNav button").forEach(b => b.classList.toggle("done", !!map[b.dataset.k])); }
+function showPane(){ ["read","watch","do","test"].forEach(k => $("#pane-"+k).classList.toggle("active", k === STAGE)); }
+
+/* شاهد */
+function renderActs(){ const cur = STEPS[STEP].act;
+  $("#actChips").innerHTML = ACTS.map((a,i) => `<button class="act ${i===cur?'active':(i<cur?'past':'')}" data-i="${i}"><span class="n">${i+1}</span>${T(a.t)}</button>`).join("");
+  $$("#actChips .act").forEach(c => c.onclick = () => { stopPlay(); STEP = ACTS[+c.dataset.i].from; drawStep(); }); }
+function renderRoleBar(){ const who = STEPS[STEP].who || {};
+  $("#roleBar").innerHTML = ROLES.map(r => { const on = !!who[r.k];
+    return `<div class="role ${on?'on':''}" style="color:${r.col}"><div class="hd"><span class="gl"></span><span class="nm">${T(r.nm)}</span><span class="job">· ${T(r.job)}</span></div>
+      <div class="idle">${T(r.idle)}</div><div class="now">${on ? T(who[r.k]) : ""}</div></div>`; }).join(""); }
+function drawStep(){ const st = STEPS[STEP];
+  $("#sceneSvg").innerHTML = stageHTML(st.s, st.cam); $("#locBadge").textContent = T(LOC[st.cam]); $("#sceneCap").innerHTML = T(st.cap);
+  $("#stepLbl").innerHTML = '<span class="ltr">' + (STEP+1) + " / " + STEPS.length + "</span>"; $("#stepBar").style.width = ((STEP+1)/STEPS.length*100) + "%";
+  $("#btnPrev").disabled = STEP === 0; $("#btnNext").disabled = STEP === STEPS.length-1; renderActs(); renderRoleBar(); refreshDots(); }
+function renderWatch(){ $("#sceneTitle").textContent = T(UI.journey); $("#btnPrev").textContent = T(UI.prev); $("#btnNext").textContent = T(UI.next);
+  $("#btnPlay").innerHTML = (PLAYING ? "❚❚ " + T(UI.pause) : "▶ " + T(UI.play)); $("#spdLbl").textContent = T(UI.speed); $("#spdSel").value = String(SPEED); drawStep(); }
+function stopPlay(){ if (PLAYING){ clearInterval(PLAYING); PLAYING = null; const b = $("#btnPlay"); if (b) b.innerHTML = "▶ " + T(UI.play); } }
+function tick(){ if (STEP < STEPS.length-1){ STEP++; drawStep(); } else stopPlay(); }
+function wireWatch(){
+  $("#btnPrev").onclick = () => { stopPlay(); if (STEP > 0){ STEP--; drawStep(); } };
+  $("#btnNext").onclick = () => { stopPlay(); if (STEP < STEPS.length-1){ STEP++; drawStep(); } };
+  $("#btnPlay").onclick = () => { if (PLAYING) return stopPlay(); if (STEP >= STEPS.length-1) STEP = 0; drawStep();
+    $("#btnPlay").innerHTML = "❚❚ " + T(UI.pause); PLAYING = setInterval(tick, stepMs()); };
+  $("#spdSel").onchange = e => { SPEED = parseFloat(e.target.value) || 1; save(); if (PLAYING){ clearInterval(PLAYING); PLAYING = setInterval(tick, stepMs()); } }; }
+
+/* نفّذ — كل المهام مفتوحة: شريط مهام مرقّم (✓ للمنجَز) + مهمة واحدة معروضة + سابق/تالٍ */
+function renderDo(){ const w = $("#doWrap"); w.innerHTML = ""; TASK_I = Math.max(0, Math.min(TASKS.length - 1, TASK_I));
+  w.insertAdjacentHTML("beforeend", `<div class="tnav" id="taskNav">${TASKS.map((t,i) => `<button class="tchip" data-i="${i}"><span class="n">${i+1}</span><span>${T(t.title)}</span></button>`).join("")}</div>`);
+  const t = TASKS[TASK_I], c = document.createElement("div"); c.className = "card task"; c.dataset.id = t.id;
+  c.innerHTML = `<h3><span class="tag ltr">${TASK_I+1} / ${TASKS.length}</span>${T(t.title)}<span class="tag ok donetag">✓ ${T(UI.done)}</span></h3><p style="font-size:.9rem;color:var(--muted)">${T(t.intro)}</p>`;
+  w.appendChild(c); t.build(c, !!DONE.do[t.id]);
+  w.insertAdjacentHTML("beforeend", `<div class="tfoot"><button class="btn" id="tPrev">${T(UI.tPrev)}</button><span class="cnt" id="tCnt"></span><button class="btn primary" id="tNext">${T(UI.tNext)}</button></div>`);
+  const go = i => { TASK_I = i; renderDo(); const n = $("#taskNav"); if (n && n.scrollIntoView) n.scrollIntoView({block:"nearest", behavior:"smooth"}); };
+  $$("#taskNav .tchip").forEach(b => b.onclick = () => go(+b.dataset.i));
+  $("#tPrev").onclick = () => go(TASK_I - 1); $("#tNext").onclick = () => go(TASK_I + 1);
+  refreshDoNav(); }
+function refreshDoNav(){ const d = TASKS.filter(t => DONE.do[t.id]).length;
+  $$("#taskNav .tchip").forEach((b,i) => { const ok = !!DONE.do[TASKS[i].id]; b.classList.toggle("done", ok); b.classList.toggle("active", i === TASK_I); b.querySelector(".n").textContent = ok ? "✓" : String(i+1); });
+  const tg = $("#doWrap .donetag"); if (tg) tg.style.display = DONE.do[TASKS[TASK_I].id] ? "" : "none";
+  const cn = $("#tCnt"); if (cn) cn.innerHTML = T(UI.tCount).replace("{d}", `<b class="ltr">${d}</b>`).replace("{n}", `<b class="ltr">${TASKS.length}</b>`);
+  const p = $("#tPrev"), n = $("#tNext"); if (p) p.disabled = TASK_I === 0; if (n) n.disabled = TASK_I === TASKS.length - 1; }
+
+/* افهم */
+function tableHTML(tb){ return `<div class="tblwrap"><table class="t"><thead><tr>${tb.head.map(h => `<th>${T(h)}</th>`).join("")}</tr></thead><tbody>${tb.rows.map(r => `<tr>${r.map(c => `<td>${T(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`; }
+function renderRead(){
+  let h = `<div class="card"><div class="keybox"><div class="lbl">${T(UI.bigIdea)}</div>${T(READ.bigIdea)}</div>
+    <div class="keybox" style="border-inline-start-color:var(--accent)"><div class="lbl" style="color:var(--accent)">${T(UI.mainIdea)}</div>${T(READ.mainIdea)}</div>
+    <h4 style="font-size:.95rem;color:var(--accent);margin:12px 0 6px">${T(UI.eq)}</h4><ul>${READ.eqs.map(q => `<li>${T(q)}</li>`).join("")}</ul></div>`;
+  h += `<div class="card read">` + READ.blocks.map(b => `<h4>${T(b.h)}</h4>` + b.p.map(p => `<p>${T(p)}</p>`).join("") + (b.table === "roles" ? tableHTML(READ.rolesTable) : "") + (b.fig ? `<div class="mini">${b.fig()}</div>` : "")).join("") + `</div>`;
+  h += `<div class="card"><h3>${T(UI.gloss)}</h3><div class="gloss">${READ.gloss.map(g => `<div class="gitem"><div class="ar">${LANG==="ar"?g.ar:g.en}</div><div class="en">${LANG==="ar"?g.en:g.ar}</div><div class="d">${T(g.d)}</div></div>`).join("")}</div></div>`;
+  $("#readWrap").innerHTML = h; }
+
+/* اختبر — الأنواع الخمسة */
+function shuffled(n, seed){ let s = 0; for (const ch of seed) s = (s*31 + ch.charCodeAt(0)) >>> 0; const a = [...Array(n).keys()];
+  for (let i = n-1; i > 0; i--){ s = (s*1103515245 + 12345) >>> 0; const j = s % (i+1); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function correctText(q){ const o = i => OT(q.opts[i]);
+  if (q.type === "mcq" || q.type === "odd") return o(q.ans); if (q.type === "multi") return q.ans.map(o).join(" · ");
+  if (q.type === "tf") return T(q.ans ? UI.tru : UI.fls); if (q.type === "match") return q.pairs.map(p => `${OT(p[0])} ← ${OT(p[1])}`).join("<br>"); return ""; }
+function expHTML(q, st){ const body = st.ok ? T(q.ok) : ((q.w && q.w[st.pick] != null ? T(q.w[st.pick]) + " " : "") + T(q.bad || q.ok));
+  return `<div class="exp ${st.ok?'good':'bad'}">${st.ok?"✔ ":"✘ "}${body}${!st.ok ? `<div style="margin-top:7px;padding-top:7px;border-top:1px dashed #ffffff22"><b>${T(UI.correctIs)}:</b> ${correctText(q)}</div>` : ""}
+    <div class="nud">${T(UI.train)}: ${T(q.nudge)}</div></div>`; }
+function commitQ(i, res){ DONE.quiz[i] = res; save(); renderQuiz(); const e = $(`.q[data-i="${i}"]`); if (e) e.scrollIntoView({block:"nearest", behavior:"smooth"}); }
+function uiChoice(q, i, a, st){ a.innerHTML = `<ul class="opts">${q.opts.map((o,j) => { let c = ""; if (st){ if (j === q.ans) c = "correct"; else if (j === st.pick) c = "miss"; }
+    return `<li class="${c}" data-j="${j}"><span class="k">${"ABCDE"[j]}</span><span>${OT(o)}</span></li>`; }).join("")}</ul>`;
+  if (!st) a.querySelectorAll("li").forEach(li => li.onclick = () => commitQ(i, {pick:+li.dataset.j, ok:+li.dataset.j === q.ans})); }
+function uiTiles(q, i, a, st){ a.innerHTML = `<div class="tiles">${q.opts.map((o,j) => { let c = ""; if (st){ if (j === q.ans) c = "correct"; else if (j === st.pick) c = "miss"; }
+    return `<div class="tile ${c}" data-j="${j}">${OT(o)}</div>`; }).join("")}</div>`;
+  if (!st) a.querySelectorAll(".tile").forEach(t => t.onclick = () => commitQ(i, {pick:+t.dataset.j, ok:+t.dataset.j === q.ans})); }
+function uiTF(q, i, a, st){ const mk = (v, lbl) => { let c = ""; if (st){ if (v === q.ans) c = "correct"; else if (v === st.pick) c = "miss"; }
+    return `<button class="tfbtn ${c}" data-v="${v}">${v ? "✔ " : "✘ "}${T(lbl)}</button>`; };
+  a.innerHTML = `<div class="tfrow">${mk(true, UI.tru)}${mk(false, UI.fls)}</div>`;
+  if (!st) a.querySelectorAll(".tfbtn").forEach(b => b.onclick = () => { const v = b.dataset.v === "true"; commitQ(i, {pick:v, ok:v === q.ans}); }); }
+function uiMulti(q, i, a, st){ const picked = new Set(st ? st.pick : []);
+  a.innerHTML = `<ul class="opts">${q.opts.map((o,j) => { let c = picked.has(j) ? "sel" : ""; if (st){ const isA = q.ans.includes(j), was = picked.has(j); c = isA && was ? "correct" : (!isA && was ? "miss" : (isA && !was ? "missed" : "")); }
+    return `<li class="${c}" data-j="${j}"><span class="k">${picked.has(j) ? "✓" : ""}</span><span>${OT(o)}</span></li>`; }).join("")}</ul>${st ? "" : `<div class="actions"><button class="btn primary" id="chk${i}" disabled>${T(UI.check)}</button></div>`}`;
+  if (st) return; const chk = a.querySelector("#chk"+i);
+  a.querySelectorAll("li").forEach(li => li.onclick = () => { const j = +li.dataset.j; picked.has(j) ? picked.delete(j) : picked.add(j); li.classList.toggle("sel", picked.has(j)); li.querySelector(".k").textContent = picked.has(j) ? "✓" : ""; chk.disabled = !picked.size; });
+  chk.onclick = () => { const pick = [...picked].sort((x,y)=>x-y); commitQ(i, {pick, ok: pick.length === q.ans.length && pick.every(j => q.ans.includes(j))}); }; }
+function uiMatch(q, i, a, st){ const n = q.pairs.length, order = shuffled(n, "q"+i), pairing = st ? st.pick.slice() : Array(n).fill(null); let selL = null; const L = "ABCDE";
+  const draw = () => {
+    const left = q.pairs.map((p,k) => { let c = ""; if (st) c = pairing[k] === k ? "correct" : "miss"; else if (selL === k) c = "sel"; const r = pairing[k];
+      return `<div class="mitem ${c} ${r!=null?'paired':''}" data-l="${k}"><span class="n">${r != null ? L[order.indexOf(r)] : "•"}</span><span>${OT(p[0])}</span></div>`; }).join("");
+    const right = order.map((ri, k) => { const by = pairing.indexOf(ri); let c = ""; if (st) c = by === ri ? "correct" : (by >= 0 ? "miss" : "");
+      return `<div class="mitem ${c} ${by>=0?'paired':''}" data-r="${ri}"><span class="n">${L[k]}</span><span>${OT(q.pairs[ri][1])}</span></div>`; }).join("");
+    a.innerHTML = `<div class="match"><div class="mcol">${left}</div><div class="mlink">⟷</div><div class="mcol">${right}</div></div>${st ? "" : `<div class="actions"><button class="btn primary" id="chk${i}" ${pairing.every(v=>v!=null)?'':'disabled'}>${T(UI.check)}</button></div>`}`;
+    if (st) return;
+    a.querySelectorAll("[data-l]").forEach(e => e.onclick = () => { selL = +e.dataset.l; draw(); });
+    a.querySelectorAll("[data-r]").forEach(e => e.onclick = () => { if (selL == null) return; const ri = +e.dataset.r; const prev = pairing.indexOf(ri); if (prev >= 0) pairing[prev] = null; pairing[selL] = ri; selL = null; draw(); });
+    a.querySelector("#chk"+i).onclick = () => commitQ(i, {pick: pairing.slice(), ok: pairing.every((r,k) => r === k)}); };
+  draw(); }
+function renderQuiz(){ const w = $("#quizWrap"); w.innerHTML = "";
+  QUIZ.forEach((q,i) => { const st = DONE.quiz[i]; const d = document.createElement("div"); d.className = "q" + (st ? (st.ok ? " done right" : " done wrong") : ""); d.dataset.i = i;
+    d.innerHTML = `<div class="qh"><div class="num">${i+1}</div><div class="stem">${T(q.stem)}</div></div><div class="qmeta"><span class="tag">${T(UI.skill)}: ${T(SK[q.sk])}</span></div><div class="ans"></div>`;
+    w.appendChild(d); ({mcq:uiChoice, odd:uiTiles, tf:uiTF, multi:uiMulti, match:uiMatch})[q.type](q, i, d.querySelector(".ans"), st);
+    if (st) d.insertAdjacentHTML("beforeend", expHTML(q, st)); });
+  renderScore(); }
+function renderScore(){ const ans = Object.keys(DONE.quiz).length, right = Object.values(DONE.quiz).filter(v => v.ok).length, pct = ans ? Math.round(right/ans*100) : 0; const per = {};
+  QUIZ.forEach((q,i) => { per[q.sk] = per[q.sk] || {n:0, r:0}; if (DONE.quiz[i] != null){ per[q.sk].n++; if (DONE.quiz[i].ok) per[q.sk].r++; } });
+  const col = v => v>=80?'var(--ok)':v>=50?'var(--warn)':'var(--bad)';
+  $("#scoreBox").innerHTML = `<div><div class="big ltr" style="color:${col(pct)}">${right} / ${QUIZ.length}</div><div class="lbl">${T(UI.score)} · <span class="ltr">${ans}</span> ${T(UI.answered)}</div></div>
+    <div class="skillbars"><div class="lbl" style="margin-bottom:2px">${T(UI.bySkill)}</div>${Object.keys(SK).map(k => { const p = per[k] || {n:0, r:0}, v = p.n ? Math.round(p.r/p.n*100) : 0;
+      return `<div class="sb"><span class="nm">${T(SK[k])}</span><span class="tr"><i style="width:${v}%;background:${col(v)}"></i></span><span class="ltr" style="flex:0 0 44px;text-align:end;color:var(--muted)">${p.r}/${p.n}</span></div>`; }).join("")}</div>`;
+  refreshDots(); }
+
+/* الكل */
+function renderAll(){
+  document.documentElement.lang = LANG; document.documentElement.dir = LANG === "ar" ? "rtl" : "ltr"; document.body.dir = document.documentElement.dir;
+  $("#hTitle").textContent = T(UI.title); $("#hSub").textContent = T(UI.sub); $("#langBtn").textContent = LANG === "ar" ? "English" : "العربية";
+  $("#resetBtn").textContent = T(UI.reset); $("#foot").innerHTML = T(UI.foot);
+  renderNav(); showPane();
+  if (STAGE === "read") renderRead(); if (STAGE === "watch") renderWatch(); if (STAGE === "do") renderDo(); if (STAGE === "test") renderQuiz(); }
+function applyLang(){ try{ renderAll(); }catch(e){} }          /* المنصّة تستدعيها بعد تبديل اللغة */
+$("#langBtn").onclick = () => { LANG = LANG === "ar" ? "en" : "ar"; stopPlay(); renderAll(); };
+$("#resetBtn").onclick = () => { DONE.do = {}; DONE.quiz = {}; SPEED = 1; save(); STEP = 0; TASK_I = 0; stopPlay(); renderAll(); };
+wireWatch(); load(); renderAll();
+</script>
+</body>
+</html>
