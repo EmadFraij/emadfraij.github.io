@@ -13,7 +13,13 @@ window.SITE = {
   title_en: "Senior International Assessments Specialist · AI in Education Creator",
   intro: "دليل منتقى لأدوات الذكاء الاصطناعي التي أنصح بها المعلمين والباحثين وواضعي الاختبارات، مرتبة حسب الاستخدام.",
   intro_en: "A curated directory of the AI tools I recommend to teachers, researchers and test developers, organised by use.",
-  updated: "2026-10-08",
+  updated: "2026-10-12",
+  /* صورتك في أعلى الصفحة: ملف الصورة يكون بجانب index.html */
+  photo: "photo.jpg",
+  /* صورة قسم «من أنا» (اختيارية) */
+  photo2: "photo-cartoon.jpg",
+  about: "متخصص أول في التقييمات الدولية بوزارة التربية والتعليم الإماراتية، أعمل على دراسات PISA وTIMSS وPIRLS وTALIS وIELS. بدأت معلماً للعلوم، ثم مديراً للمشاريع في ACER، وأكثر من 25 عاماً في التعليم والتقييم. أصنع محتوى يساعد المعلمين على توظيف الذكاء الاصطناعي بوعي وفاعلية.",
+  about_en: "Senior International Assessments Specialist at the UAE Ministry of Education, working on PISA, TIMSS, PIRLS, TALIS and IELS. A former science teacher and ACER project manager, with 25+ years in education and assessment. I create content that helps educators use AI thoughtfully and effectively.",
   social: {
     linkedin:  "https://www.linkedin.com/in/emad-fraij-a66052291/",
     youtube:   "",
@@ -52,10 +58,18 @@ window.CATEGORIES = [
   { id: "prompts", title: "هندسة الأوامر", en: "Prompt Engineering" },
   { id: "dev", title: "منصات المطورين", en: "Developer Platforms" },
   { id: "local", title: "تشغيل النماذج محلياً", en: "Run AI Locally" },
-  { id: "arabic", title: "أدوات ومصادر عربية", en: "Arabic Tools & Resources" },
   { id: "detect", title: "كشف النص المولّد آلياً", en: "AI Text Detection" },
   { id: "directories", title: "أدلة أدوات الذكاء الاصطناعي", en: "AI Tool Directories" },
   { id: "learn", title: "تعلّم الذكاء الاصطناعي", en: "Learn AI" }
+];
+
+/* ---------- المجالات الكبرى: كل مجال يضم عدة أقسام ---------- */
+window.DOMAINS = [
+  { id: "talk",     title: "المحادثة والوكلاء",  en: "Chat & Agents",        cats: ["chat","multi","arena","agents"] },
+  { id: "learn",    title: "البحث والتعلّم",      en: "Research & Learning",  cats: ["research","files","learn","directories","detect"] },
+  { id: "edu",      title: "التعليم والتقييم",    en: "Teaching & Assessment", cats: ["teacher","assess","intl","data"] },
+  { id: "create",   title: "صناعة المحتوى",       en: "Content Creation",     cats: ["writing","translate","slides","infographic","mindmap","images","video","voice","transcribe","music"] },
+  { id: "build",    title: "البناء والأتمتة",     en: "Build & Automate",     cats: ["builders","automation","prompts","dev","local"] }
 ];
 
 /* ---------- 3) الأدوات ----------
@@ -378,13 +392,6 @@ window.TOOLS = [
   { "cat": "local", "name": "Ollama", "url": "https://ollama.com", "price": "", "note": "أسهل طريقة لتنزيل النماذج مفتوحة المصدر وتشغيلها محلياً.", "note_en": "The easiest way to download and run open-source models locally." },
   { "cat": "local", "name": "Pinokio", "url": "https://pinokio.co", "price": "", "note": "متصفح يثبّت تطبيقات الذكاء الاصطناعي ويشغّلها محلياً بنقرة.", "note_en": "A browser that installs and runs AI apps locally in one click." },
 
-  // أدوات ومصادر عربية
-  { "cat": "arabic", "name": "تعلّم Claude Code — أحمد نجدي", "url": "https://claude.nagdy.me", "price": "", "note": "دروس عربية تفاعلية لتعلّم Claude Code خطوة بخطوة.", "note_en": "Interactive Arabic lessons for learning Claude Code step by step." },
-  { "cat": "arabic", "name": "AItoolsBot", "url": "https://aitoolsbot.com", "price": "", "note": "دليل عربي لأدوات الذكاء الاصطناعي مصنّف حسب الاستخدام.", "note_en": "An Arabic directory of AI tools organised by use." },
-  { "cat": "arabic", "name": "أوامر (Awamer)", "url": "https://awamer.ai", "price": "", "note": "منصة عربية لبناء أوامر الذكاء الاصطناعي وتحسينها.", "note_en": "An Arabic platform for building and improving AI prompts." },
-  { "cat": "arabic", "name": "لهجاتي (Lahajati)", "url": "https://lahajati.ai", "price": "", "note": "أدوات صوتية بالذكاء الاصطناعي تدعم اللهجات العربية.", "note_en": "AI voice tools that support Arabic dialects." },
-  { "cat": "arabic", "name": "سَهَل AI", "url": "https://sahalai.com", "price": "", "note": "منصة ذكاء اصطناعي عربية لإنجاز المهام اليومية.", "note_en": "An Arabic AI platform for everyday tasks." },
-  { "cat": "arabic", "name": "شكّلي — التشكيل الآلي", "url": "https://tashkeel.alsharekh.org", "price": "", "note": "يضع الحركات على النص العربي آلياً.", "note_en": "Automatically adds diacritics to Arabic text." },
 
   // كشف النص المولّد آلياً
   { "cat": "detect", "name": "GPTZero", "url": "https://gptzero.me", "price": "freemium", "note": "نتائج هذه الأدوات احتمالية وليست دليلاً قاطعاً.", "note_en": "Detector results are probabilistic, not conclusive proof." },
@@ -422,5 +429,4 @@ window.TOOLS = [
   { "cat": "learn", "name": "Kaggle Learn", "url": "https://www.kaggle.com/learn", "price": "", "note": "دورات مجانية قصيرة في البيانات وتعلّم الآلة.", "note_en": "Free short courses in data and machine learning." },
   { "cat": "learn", "name": "Learn Anything", "url": "https://learn-anything.xyz", "price": "", "note": "يبني لك مساراً تعليمياً لأي موضوع.", "note_en": "Builds you a learning path for any topic." },
   { "cat": "learn", "name": "Google Skills", "url": "https://www.skills.google", "price": "", "note": "دورات Google في الذكاء الاصطناعي التوليدي والسحابة.", "note_en": "Google courses in generative AI and cloud." },
-  { "cat": "learn", "name": "Agentic AI Academy (UAE)", "url": "https://www.agenticaiacademy.ae", "price": "", "note": "برنامج إماراتي في أساسيات الذكاء الاصطناعي التوليدي والوكلاء.", "note_en": "A UAE programme on generative and agentic AI foundations." }
 ];
