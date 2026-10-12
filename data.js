@@ -11,8 +11,8 @@ window.SITE = {
   name_en: "Emad Fraij",
   title: "متخصص أول في التقييمات الدولية · صانع محتوى في الذكاء الاصطناعي للتعليم",
   title_en: "Senior International Assessments Specialist · AI in Education Creator",
-  intro: "دليل منتقى لأدوات الذكاء الاصطناعي التي أنصح بها المعلمين والباحثين وواضعي الاختبارات، مرتبة حسب الاستخدام.",
-  intro_en: "A curated directory of the AI tools I recommend to teachers, researchers and test developers, organised by use.",
+  intro: "دليل منتقى لأدوات الذكاء الاصطناعي التي أنصح بها المعلمين والباحثين وواضعي الاختبارات.",
+  intro_en: "A curated directory of the AI tools I recommend to teachers, researchers and test developers.",
   updated: "2026-10-12",
   /* صورتك في أعلى الصفحة: ملف الصورة يكون بجانب index.html */
   photo: "photo.jpg",

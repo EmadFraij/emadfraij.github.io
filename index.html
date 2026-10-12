@@ -94,7 +94,7 @@ body.ready .scanline{animation:scan 1.4s ease .8s forwards}
 .role{font-size:clamp(1rem,2.2vw,1.3rem);color:var(--muted);min-height:2em;margin-top:14px}
 .role .cursor{display:inline-block;width:2px;height:1.1em;background:var(--cyan);vertical-align:middle;margin-inline-start:3px;box-shadow:0 0 10px var(--cyan);animation:blink .9s steps(1) infinite}
 @keyframes blink{50%{opacity:0}}
-.intro{max-width:660px;margin:14px auto 0;color:var(--soft);font-size:1.08rem}
+.intro{max-width:800px;margin:14px auto 0;color:var(--soft);font-size:1.08rem}
 .cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:30px}
 .btn{display:inline-flex;align-items:center;gap:10px;padding:13px 24px;border-radius:14px;font-weight:600;cursor:pointer;transition:.25s;border:1px solid var(--line)}
 .btn.primary{color:#04050d;background:linear-gradient(135deg,var(--cyan),#6ee7ff);border:0;box-shadow:0 0 30px rgba(0,240,255,.45)}
@@ -109,10 +109,11 @@ body.ready .scanline{animation:scan 1.4s ease .8s forwards}
 .stat:nth-child(3) b{color:var(--lime);text-shadow:0 0 18px rgba(182,255,59,.6)}
 .stat span{font-size:.85rem;color:var(--muted)}
 
-.marquee{padding:22px 0;border-block:1px solid var(--line);background:rgba(10,12,28,.45);backdrop-filter:blur(8px);overflow:hidden;
+.marquee{direction:ltr;padding:22px 0;border-block:1px solid var(--line);background:rgba(10,12,28,.45);backdrop-filter:blur(8px);overflow:hidden;
   -webkit-mask:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent);mask:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent)}
 .track{display:flex;gap:14px;width:max-content;animation:slide 70s linear infinite;direction:ltr}
 .track.rev{animation-direction:reverse;margin-top:12px;animation-duration:85s}
+.hm{width:100vw;margin:22px calc(50% - 50vw) 8px}
 .marquee:hover .track{animation-play-state:paused}
 @keyframes slide{to{transform:translateX(-50%)}}
 .logo{display:flex;align-items:center;gap:10px;padding:9px 15px;border-radius:14px;border:1px solid var(--line);background:var(--glass);white-space:nowrap;font-size:.9rem;color:var(--soft);transition:.25s}
@@ -267,7 +268,6 @@ footer{margin-top:90px;padding:40px 0;border-top:1px solid var(--line);text-alig
 
 <nav class="topbar" id="topbar">
   <div class="wrap">
-    <a class="brand" href="#"><span class="mono" id="mono"></span><span class="full" id="brandName"></span></a>
     <span class="spacer"></span>
     <button class="kbtn" id="kbtn" aria-label="Search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><span data-i18n="quick">بحث سريع</span><kbd>Ctrl K</kbd></button>
     <div class="lang" role="group" aria-label="Language"><button data-lang="ar">ع</button><button data-lang="en">EN</button></div>
@@ -277,10 +277,11 @@ footer{margin-top:90px;padding:40px 0;border-top:1px solid var(--line);text-alig
 <header class="hero" id="hero">
   <div class="hero-inner" id="heroInner">
     <div class="avatar"><div class="face" id="face"></div></div>
-    <span class="chip"><i></i><span data-i18n="chip">دليل حيّ يُحدَّث باستمرار</span></span>
+    <span class="chip"><i></i><span id="chipName"></span></span>
     <h1 id="name"></h1>
     <div class="scanline"></div>
     <p class="role"><span id="typed"></span><span class="cursor"></span></p>
+    <div class="marquee hm" aria-hidden="true"><div class="track" id="t1"></div><div class="track rev" id="t2"></div></div>
     <p class="intro" id="intro"></p>
     <div class="cta">
       <a class="btn primary" href="#directory"><span data-i18n="explore">استكشف الأدوات</span></a>
@@ -294,7 +295,6 @@ footer{margin-top:90px;padding:40px 0;border-top:1px solid var(--line);text-alig
   </div>
 </header>
 
-<div class="marquee" aria-hidden="true"><div class="track" id="t1"></div><div class="track rev" id="t2"></div></div>
 
 <section class="wrap sec rv" id="picks">
   <div class="eyebrow" data-i18n="e1">مختارات</div>
@@ -411,10 +411,9 @@ footer{margin-top:90px;padding:40px 0;border-top:1px solid var(--line);text-alig
 
   function applyStatic(){
     var h = document.documentElement; h.lang = lang; h.dir = lang==="en" ? "ltr" : "rtl";
-    ["name","brandName","aboutName"].forEach(function(id){ document.getElementById(id).textContent = pick(S,"name"); });
+    ["name","aboutName","chipName"].forEach(function(id){ document.getElementById(id).textContent = pick(S,"name"); });
     document.getElementById("intro").textContent = pick(S,"intro");
     document.getElementById("aboutText").textContent = pick(S,"about");
-    document.getElementById("mono").textContent = lang==="en" ? "EF" : "ع";
     face(document.getElementById("face"), S.photo); face(document.getElementById("face2"), S.photo2||S.photo);
     document.title = pick(S,"name")+" · "+L("docTitle");
     document.querySelectorAll("[data-i18n]").forEach(function(el){ el.textContent = L(el.dataset.i18n); });
