@@ -91,7 +91,7 @@ body.ready .hero h1{animation:flow 9s linear infinite,reveal 1.2s cubic-bezier(.
 .scanline{height:2px;width:min(520px,70vw);margin:0 auto;background:linear-gradient(90deg,transparent,var(--cyan),transparent);box-shadow:0 0 18px var(--cyan);opacity:0}
 body.ready .scanline{animation:scan 1.4s ease .8s forwards}
 @keyframes scan{0%{opacity:0;transform:scaleX(0)}40%{opacity:1;transform:scaleX(1)}100%{opacity:.35;transform:scaleX(1)}}
-.role{font-size:clamp(1rem,2.2vw,1.3rem);color:var(--muted);min-height:2em;margin-top:14px}
+.role{font-size:clamp(1rem,2.2vw,1.3rem);color:var(--muted);min-height:2em;margin-top:22px}
 .role .cursor{display:inline-block;width:2px;height:1.1em;background:var(--cyan);vertical-align:middle;margin-inline-start:3px;box-shadow:0 0 10px var(--cyan);animation:blink .9s steps(1) infinite}
 @keyframes blink{50%{opacity:0}}
 .intro{max-width:800px;margin:14px auto 0;color:var(--soft);font-size:1.08rem}
@@ -278,8 +278,6 @@ footer{margin-top:90px;padding:40px 0;border-top:1px solid var(--line);text-alig
   <div class="hero-inner" id="heroInner">
     <div class="avatar"><div class="face" id="face"></div></div>
     <span class="chip"><i></i><span id="chipName"></span></span>
-    <h1 id="name"></h1>
-    <div class="scanline"></div>
     <p class="role"><span id="typed"></span><span class="cursor"></span></p>
     <div class="marquee hm" aria-hidden="true"><div class="track" id="t1"></div><div class="track rev" id="t2"></div></div>
     <p class="intro" id="intro"></p>
@@ -411,7 +409,7 @@ footer{margin-top:90px;padding:40px 0;border-top:1px solid var(--line);text-alig
 
   function applyStatic(){
     var h = document.documentElement; h.lang = lang; h.dir = lang==="en" ? "ltr" : "rtl";
-    ["name","aboutName","chipName"].forEach(function(id){ document.getElementById(id).textContent = pick(S,"name"); });
+    ["aboutName","chipName"].forEach(function(id){ document.getElementById(id).textContent = pick(S,"name"); });
     document.getElementById("intro").textContent = pick(S,"intro");
     document.getElementById("aboutText").textContent = pick(S,"about");
     face(document.getElementById("face"), S.photo); face(document.getElementById("face2"), S.photo2||S.photo);
