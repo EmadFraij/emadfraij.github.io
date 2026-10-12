@@ -12,7 +12,7 @@ window.SITE = {
   title: "متخصص أول في التقييمات الدولية · صانع محتوى في الذكاء الاصطناعي للتعليم",
   title_en: "Senior International Assessments Specialist · AI in Education Creator",
   intro: "دليل منتقى لأدوات الذكاء الاصطناعي التي أنصح بها المعلمين والباحثين وواضعي الاختبارات.",
-  intro_en: "A curated directory of the AI tools I recommend to teachers, researchers and test developers.",
+  intro_en: "A curated directory of the AI tools I recommend to researchers, test developers and teachers.",
   updated: "2026-10-12",
   /* صورتك في أعلى الصفحة: ملف الصورة يكون بجانب index.html */
   photo: "photo.jpg",
@@ -170,7 +170,6 @@ window.TOOLS = [
 
   // التقويم وبناء الاختبارات
   { "cat": "assess", "name": "Conker", "url": "https://www.conker.ai", "price": "freemium", "note": "توليد اختبارات قصيرة من موضوع أو نص.", "note_en": "Generates quizzes from a topic or text." },
-  { "cat": "assess", "name": "Kahoot!", "url": "https://kahoot.com", "price": "freemium", "note": "اختبارات تفاعلية بأسلوب الألعاب يشارك فيها الطلبة من أجهزتهم.", "note_en": "Game-style interactive quizzes that students join from their devices." },
   { "cat": "assess", "name": "Socrative", "url": "https://www.socrative.com", "price": "freemium", "note": "اختبارات سريعة وأسئلة خروج مع نتائج فورية للمعلم.", "note_en": "Quick quizzes and exit tickets with instant results for the teacher." },
   { "cat": "assess", "name": "Google Forms", "url": "https://forms.google.com", "price": "free", "note": "إنشاء اختبارات واستبانات وتصحيحها تلقائياً ضمن Google Workspace.", "note_en": "Create and auto-grade quizzes and surveys within Google Workspace." },
   { "cat": "assess", "name": "HelpTeaching", "url": "https://www.helpteaching.com", "price": "", "note": "بنك أسئلة وأوراق عمل جاهزة مع مولّد أسئلة بالذكاء الاصطناعي.", "note_en": "A bank of ready questions and worksheets with an AI question generator." },
