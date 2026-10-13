@@ -556,7 +556,7 @@ $('copy').addEventListener('click', () => copyText($('prompt'), $('copymsg')));
 document.addEventListener('change', e => { if (e.target.closest('#lab13')) lab13Calc(); if (e.target.closest('#lab3')) lab3Calc(); if (e.target.closest('#lab4')) lab4Calc(); });
 document.addEventListener('input', e => { if (e.target.closest('#lab4')) lab4Calc(); if (e.target.closest('#lab6')) lab6Calc(); if (e.target.closest('#lab13')) lab13Calc(); });
 // ---------- start ----------
-renderWeeks(10);
+renderWeeks(0);
 const A0 = analyse();
 $('ovstats').innerHTML = stat('150', 'طالباً في بيانات المشغل') + stat('30', 'فقرة اختيار من متعدد') + stat(A0.alpha.toFixed(2), 'معامل الثبات') + stat('9', 'فقرات تستحق النقاش');
 render(); renderQuiz();
