@@ -15,7 +15,7 @@ window.SITE = {
   intro_en: "A curated directory of the AI tools I recommend to researchers, test developers and teachers.",
   updated: "2026-10-12",
   /* صورتك في أعلى الصفحة: ملف الصورة يكون بجانب index.html */
-  photo: "photo.jpg",
+  photo: "photo-formal.jpg",
   /* صورة قسم «من أنا» (اختيارية) */
   photo2: "photo-cartoon.jpg",
   about: "متخصص أول في التقييمات الدولية بوزارة التربية والتعليم الإماراتية، أعمل على دراسات PISA وTIMSS وPIRLS وTALIS وIELS. بدأت معلماً للعلوم، ثم مديراً للمشاريع في ACER، وأكثر من 25 عاماً في التعليم والتقييم. أصنع محتوى يساعد المعلمين على توظيف الذكاء الاصطناعي بوعي وفاعلية.",
