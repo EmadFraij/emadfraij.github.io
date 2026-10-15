@@ -39,6 +39,9 @@ p { margin: 0 }
 .muted { color: var(--muted) }
 header.top { display: grid; gap: 8px; margin-bottom: 22px }
 header.top .meta { color: var(--muted); font-size: .95rem }
+.langbtn { justify-self: end; display: inline-flex; align-items: center; border: 1px solid var(--accent); color: var(--accent); background: transparent; border-radius: 999px; padding: 2px 14px; font-size: .85rem; font-weight: 600; line-height: 1.6; text-decoration: none }
+.langbtn:hover { background: var(--accent-soft) }
+.langbtn:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px }
 /* week strip */
 .weeks { display: grid; grid-template-columns: repeat(15, minmax(0, 1fr)); gap: 6px; margin-block: 18px 6px }
 .wk { border: 1px solid var(--line); background: var(--sheet); border-radius: 10px; padding: 8px 4px; text-align: center; font-size: .78rem; color: var(--muted); cursor: pointer; display: grid; gap: 2px; justify-items: center; font-family: inherit }
@@ -118,6 +121,7 @@ td.n { font-family: var(--f-num); font-variant-numeric: tabular-nums; direction:
 
 <div class="wrap">
   <header class="top">
+    <a id="langbtn" class="langbtn" href="en/" lang="en">English</a>
     <span class="eyebrow">دبلوم الدراسات العليا المهني في التدريس · 3 ساعات معتمدة</span>
     <h1>القياس والتقويم التربوي</h1>
     <p class="meta">خمسة عشر أسبوعاً يبني فيها كل طالب اختباراً حقيقياً لصفه بمساعدة كلود، ويطبّقه، ويحلل بياناته، ويدافع عن قراراته.</p>
@@ -348,6 +352,7 @@ function renderDetail() {
     <p><span class="chip ${it.rec[1]}">${it.rec[0]}</span></p><p class="muted">المستطيل الملوّن للفئة العليا، والرمادي للدنيا. الدائرة الداكنة هي المفتاح الحالي.</p><div class="bars">${bars}</div>${hint}`;
 }
 function renderWeeks(active) {
+  document.getElementById('langbtn').href = 'en/#w=' + (active + 1);
   $('weeks').innerHTML = WEEKS.map((w, i) => `<button class="wk ${(i === 10 || WK[i]) ? 'ready' : ''} ${i === active ? 'active' : ''}" type="button" data-w="${i}" aria-pressed="${i === active}"><span class="n">${i + 1}</span></button>`).join('');
   const w = WEEKS[active];
   $('weekinfo').innerHTML = `<span class="eyebrow">الأسبوع ${active + 1}</span><h2>${w[0]}</h2><p class="muted">${w[1]}</p>` +
@@ -552,7 +557,7 @@ document.addEventListener('input', e => { if (e.target.closest('#lab4')) lab4Cal
 // ---------- start ----------
 const W11FILES = [["المحتوى العلمي للأسبوع", "ملف وورد · 7 صفحات", "files/w11/lecture.docx", "01 المحتوى العلمي - الأسبوع 11.docx"], ["العرض التقديمي للمحاضرة", "باوربوينت · 18 شريحة", "files/w11/slides.pptx", "02 العرض التقديمي - الأسبوع 11.pptx"], ["بيانات المشغل وقالب التحليل بمعادلات حية", "إكسل · 5 أوراق", "files/w11/data.xlsx", "03 بيانات المشغل وتحليل الفقرات - الأسبوع 11.xlsx"], ["ورقة المشغل", "وورد · للطالب", "files/w11/workshop.docx", "04 ورقة المشغل - الأسبوع 11.docx"], ["مهمة المرحلة 3 وسلم تقديرها", "وورد · 15% من درجة المساق", "files/w11/task.docx", "05 مهمة المرحلة 3 وسلم التقدير.docx"]];
 $('w11files').innerHTML = W11FILES.map(f => `<div class="file"><span>${esc(f[0])}<br><span class="muted">${esc(f[1])}</span></span><span class="fileacts"><a class="btn ghost sm" href="${viewUrl(f[2])}" target="_blank" rel="noopener">عرض</a><a class="btn sm" href="${esc(f[2])}" download="${esc(f[3])}">تنزيل</a></span></div>`).join('');
-renderWeeks(0);
+const _h = +((location.hash.match(/w=(\d+)/) || [])[1] || 0); renderWeeks(_h >= 1 && _h <= 15 ? _h - 1 : 0);
 const A0 = analyse();
 $('ovstats').innerHTML = stat('150', 'طالباً في بيانات المشغل') + stat('30', 'فقرة اختيار من متعدد') + stat(A0.alpha.toFixed(2), 'معامل الثبات') + stat('9', 'فقرات تستحق النقاش');
 render(); renderQuiz();
