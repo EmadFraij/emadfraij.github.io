@@ -1,3 +1,4 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <!doctype html>
 <html lang="ar" dir="rtl">
 <head>
@@ -204,10 +205,6 @@ section.cat{padding:22px 0 18px}
 .card:hover .go{color:var(--cyan);gap:8px}
 .empty{text-align:center;color:var(--muted);padding:60px 0;display:none}
 
-.about{display:grid;grid-template-columns:auto 1fr;gap:40px;align-items:center;padding:38px;border-radius:28px;border:1px solid var(--line);
-  background:linear-gradient(135deg,rgba(0,240,255,.07),rgba(139,92,246,.06),rgba(255,43,214,.06));margin-top:26px}
-.about .avatar{width:150px;height:150px;margin:0}
-.about p{color:var(--soft);font-size:1.05rem;margin:8px 0 18px;max-width:720px}
 footer{margin-top:90px;padding:40px 0;border-top:1px solid var(--line);text-align:center;color:var(--muted);font-size:.9rem}
 
 .pal{position:fixed;inset:0;z-index:150;display:none;align-items:flex-start;justify-content:center;padding:12vh 16px 16px;background:rgba(2,3,8,.6);backdrop-filter:blur(6px)}
@@ -243,8 +240,6 @@ footer{margin-top:90px;padding:40px 0;border-top:1px solid var(--line);text-alig
   .kbtn span{display:none}
 }
 @media (max-width:600px){
-  .about{grid-template-columns:1fr;text-align:center;padding:26px}
-  .about .avatar{margin:0 auto}
   .grid{grid-template-columns:1fr}
   .brand .full{display:none}
   .avatar{width:136px;height:136px}
@@ -283,7 +278,6 @@ footer{margin-top:90px;padding:40px 0;border-top:1px solid var(--line);text-alig
     <p class="intro" id="intro"></p>
     <div class="cta">
       <a class="btn primary" href="#directory"><span data-i18n="explore">استكشف الأدوات</span></a>
-      <a class="btn ghost" id="liBtn" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.460v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg><span data-i18n="follow">تابعني على LinkedIn</span></a>
     </div>
     <div class="stats">
       <div class="stat"><b data-count="tools">0</b><span data-i18n="sTools">أداة منتقاة</span></div>
@@ -330,18 +324,6 @@ footer{margin-top:90px;padding:40px 0;border-top:1px solid var(--line);text-alig
   </div>
 </section>
 
-<section class="wrap sec rv" id="aboutSec">
-  <div class="about">
-    <div class="avatar"><div class="face" id="face2"></div></div>
-    <div>
-      <div class="eyebrow" data-i18n="e4">من أنا</div>
-      <h2 id="aboutName" style="font-size:1.8rem;margin:4px 0 0"></h2>
-      <p id="aboutText"></p>
-      <a class="btn ghost" id="liBtn2" target="_blank" rel="noopener"><span data-i18n="follow">تابعني على LinkedIn</span></a>
-    </div>
-  </div>
-</section>
-
 <footer class="wrap"><p id="foot"></p></footer>
 
 <button class="totop" id="totop" aria-label="Top">&uarr;</button>
@@ -362,15 +344,15 @@ footer{margin-top:90px;padding:40px 0;border-top:1px solid var(--line);text-alig
   var I18N = {
     ar:{chip:"دليل حيّ يُحدَّث باستمرار",sTools:"أداة منتقاة",sCats:"قسماً",sFree:"مجانية بالكامل",empty:"لا توجد نتائج مطابقة.",all:"كل الأدوات",
         visit:"زيارة",search:"ابحث عن أداة أو استخدام…",updated:"آخر تحديث",docTitle:"أدوات الذكاء الاصطناعي للتعليم",quick:"بحث سريع",
-        explore:"استكشف الأدوات",follow:"تابعني على LinkedIn",e1:"مختارات",h1:"اختياراتي الأولى",l1:"الأدوات التي أستخدمها يومياً وأنصح بها قبل غيرها.",
-        e2:"المجالات",h2:"ابدأ من حاجتك",l2:"اختر مجالاً لتنتقل مباشرة إلى أدواته.",e3:"الدليل الكامل",h3:"كل الأدوات",e4:"من أنا",
+        explore:"استكشف الأدوات",e1:"مختارات",h1:"اختياراتي الأولى",l1:"الأدوات التي أستخدمها يومياً وأنصح بها قبل غيرها.",
+        e2:"المجالات",h2:"ابدأ من حاجتك",l2:"اختر مجالاً لتنتقل مباشرة إلى أدواته.",e3:"الدليل الكامل",h3:"كل الأدوات",
         reset:"إلغاء كل التصفيات",showing:"يُعرض {n} من {t} أداة",palph:"اكتب اسم أداة أو قسم…",
         price:{free:"مجاني",freemium:"مجاني جزئياً",paid:"مدفوع"},
         phrases:["أدوات منتقاة للمعلم والباحث وواضع الاختبارات","الذكاء الاصطناعي في خدمة التعليم"]},
     en:{chip:"A living directory, updated regularly",sTools:"curated tools",sCats:"categories",sFree:"completely free",empty:"No matching results.",all:"All tools",
         visit:"Visit",search:"Search for a tool or use…",updated:"Last updated",docTitle:"AI Tools for Education",quick:"Quick search",
-        explore:"Explore the tools",follow:"Follow me on LinkedIn",e1:"Featured",h1:"My Top Picks",l1:"The tools I use every day and recommend first.",
-        e2:"Domains",h2:"Start from what you need",l2:"Pick a domain to jump straight to its tools.",e3:"Full directory",h3:"All tools",e4:"About me",
+        explore:"Explore the tools",e1:"Featured",h1:"My Top Picks",l1:"The tools I use every day and recommend first.",
+        e2:"Domains",h2:"Start from what you need",l2:"Pick a domain to jump straight to its tools.",e3:"Full directory",h3:"All tools",
         reset:"Clear all filters",showing:"Showing {n} of {t} tools",palph:"Type a tool or category…",
         price:{free:"Free",freemium:"Freemium",paid:"Paid"},
         phrases:["Hand-picked tools for teachers, researchers and test developers","AI in the service of education"]}
@@ -409,15 +391,13 @@ footer{margin-top:90px;padding:40px 0;border-top:1px solid var(--line);text-alig
 
   function applyStatic(){
     var h = document.documentElement; h.lang = lang; h.dir = lang==="en" ? "ltr" : "rtl";
-    ["aboutName","chipName"].forEach(function(id){ document.getElementById(id).textContent = pick(S,"name"); });
+    ["chipName"].forEach(function(id){ document.getElementById(id).textContent = pick(S,"name"); });
     document.getElementById("intro").textContent = pick(S,"intro");
-    document.getElementById("aboutText").textContent = pick(S,"about");
-    face(document.getElementById("face"), S.photo); face(document.getElementById("face2"), S.photo2||S.photo);
+    face(document.getElementById("face"), S.photo);
     document.title = pick(S,"name")+" · "+L("docTitle");
     document.querySelectorAll("[data-i18n]").forEach(function(el){ el.textContent = L(el.dataset.i18n); });
     ["q","mq"].forEach(function(id){ document.getElementById(id).placeholder = L("search"); });
     document.getElementById("pq").placeholder = L("palph");
-    var li = (S.social&&S.social.linkedin)||"#"; document.getElementById("liBtn").href = li; document.getElementById("liBtn2").href = li;
     document.getElementById("foot").textContent = "© "+new Date().getFullYear()+" "+pick(S,"name")+" · "+L("updated")+" "+S.updated;
     document.querySelectorAll(".lang button").forEach(function(b){ b.classList.toggle("on", b.dataset.lang===lang); });
   }
@@ -632,3 +612,5 @@ footer{margin-top:90px;padding:40px 0;border-top:1px solid var(--line);text-alig
 </script>
 </body>
 </html>
+
+</body></html>
