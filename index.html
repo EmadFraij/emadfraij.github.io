@@ -550,7 +550,7 @@ footer{margin-top:90px;padding:40px 0;border-top:1px solid var(--line);text-alig
     try{ localStorage.setItem("lang", l); }catch(e){}
     try{ var url = new URL(location.href); if(l==="en") url.searchParams.set("lang","en"); else url.searchParams.delete("lang"); history.replaceState(null,"",url.toString()); }catch(e){}
     applyStatic(); buildRail(); buildBento(); buildNav(); sync(); render();
-    phrases = [pick(S,"title")].concat(L("phrases"));
+    phrases = L("phrases");
     if(!initial) restartType();
   }
   document.querySelector(".lang").addEventListener("click", function(e){ var b = e.target.closest("button[data-lang]"); if(b && b.dataset.lang!==lang) setLang(b.dataset.lang); });
